@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateSocialMediaAccounts } from '../../Redux/Slice/SocialAgencySlice';
+import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
 
 const SocialMediaInfo = () => {
     const dispatch = useDispatch()
@@ -24,7 +24,7 @@ const SocialMediaInfo = () => {
     };
 
     useEffect(() => {
-        dispatch(updateSocialMediaAccounts(SocialMediaData));
+        dispatch(updateSocialMediaAgency(SocialMediaData));
     }, [SocialMediaData, dispatch]);
 
     return (
@@ -34,7 +34,7 @@ const SocialMediaInfo = () => {
                     <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
                     <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
                 </div>
-                <h1 className='font-medium text-data-text text-center'>Social Media Agency Information</h1>
+                <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Agency Information</h1>
             </header>
             <div className='border border-black rounded-lg px-5 py-3 '>
                 <p>Complete only if your hotel uses an outside agency to manage the hotel's social media accounts</p>

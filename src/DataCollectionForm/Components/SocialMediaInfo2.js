@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
 
 const SocialMediaInfo2 = () => {
+    const dispatch = useDispatch();
     const [socialMediaAccount, setSocialMediaAccount] = useState({
         Facebook: false,
         Instagram: false,
@@ -29,7 +32,7 @@ const SocialMediaInfo2 = () => {
                     phone: '',
                     url: '',
                     pageID: '',
-                    isInFBM: null,
+                    isInMBM: null,
                     dcubeAdded: null,
                 },
             }));
@@ -52,12 +55,19 @@ const SocialMediaInfo2 = () => {
         }));
     };
 
-    console.log(socialMediaData); // Logs all dynamic values for debugging
+    console.log(socialMediaData);
+    useEffect(() => {
+        dispatch(updateSocialMediaAgency(socialMediaData))
+    }, [socialMediaData, dispatch])
 
     return (
         <div className='flex flex-col gap-5'>
             <header className='border border-black rounded-lg p-3 text-xl bg-data-blue'>
-                <h1 className='font-medium text-data-text'>Social Media Information</h1>
+                <div className='flex items-center justify-between px-5'>
+                    <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
+                    <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
+                </div>
+                <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Information</h1>
             </header>
             <div className='border border-black rounded-lg px-5 py-3 '>
                 <p>Please Check the social media account you have for the above-mentioned hotel:</p>
@@ -72,7 +82,7 @@ const SocialMediaInfo2 = () => {
                                 name={platform}
                                 checked={socialMediaAccount[platform]}
                             />
-                            <label htmlFor={platform}>{platform}</label>
+                            <label className='mt-1' htmlFor={platform}>{platform}</label>
                         </span>
                     ))}
                 </div>
@@ -90,7 +100,6 @@ const SocialMediaInfo2 = () => {
                             </div>
                             <div className='flex gap-10 mt-5'>
                                 <section className='font-semibold'>{platform}</section>
-
                                 <section className='px-10 py-3 w-full'>
                                     <div className='flex items-center gap-5 py-2'>
                                         <div className='flex flex-col w-[50%]'>
@@ -167,7 +176,7 @@ const SocialMediaInfo2 = () => {
                                     </div>
 
                                     <span className='flex gap-5 py-2'>
-                                        <p>Is your {platform} page in Marriott’s Business Manager (MI FBM)?</p>
+                                        <p>Is your {platform} page in Marriott’s Business Manager (MI {platform.slice(0, 1)}BM)?</p>
                                         <span className='flex items-center gap-3'>
                                             <label>Yes</label>
                                             <input
@@ -193,7 +202,7 @@ const SocialMediaInfo2 = () => {
                         {!socialMediaData[platform]?.isInFBM && (
                             <section>
                                 <div className='border border-black rounded-lg p-5 text-xl bg-data-blue'>
-                                    <h1 className='text-sm font-normal'>Section 3: If your {platform} page is not enrolled in Marriott’s FBM, update below</h1>
+                                    <h1 className='text-sm font-normal'>Section 3:  If your {platform} page in  not enrolled in Marriott’s Facebook Business Manager (MI {platform.slice(0, 1)}BM), then update below                                    </h1>
                                 </div>
                                 <section className='flex flex-col items-center justify-center py-3'>
                                     <p>Did you successfully add DCube to your {platform} account?</p>

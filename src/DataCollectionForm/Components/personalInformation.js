@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
 import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
 import { updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const CountrySelect = ({ onChange, labels, ...rest }) => (
   <select
@@ -47,17 +47,25 @@ const PersonalInformation = () => {
       ...prevData,
       [name]: value,
     }));
-    dispatch(updatePersonalInformation(Personaldata))
   };
 
   const handleCountryCodeChange = (callingCode) => {
     setPersonalData((prevData) => ({
       ...prevData,
-      CountryCode: callingCode,
+      CountryCode: `+${callingCode}`,
     }));
   };
-  const SliceData = useSelector((state) => state.personalInformation.PersonalInfoData)
-  console.log("SliceData",SliceData);
+  if (
+    Personaldata.FirstName &&
+    Personaldata.LastName &&
+    Personaldata.Title &&
+    Personaldata.Email &&
+    Personaldata.Eid &&
+    Personaldata.CountryCode &&
+    Personaldata.PhoneNumber
+  ) {
+    dispatch(updatePersonalInformation(Personaldata));
+  }
 
   return (
     <div className='flex flex-col gap-5'>
@@ -73,7 +81,7 @@ const PersonalInformation = () => {
 
       {/* Personal Information */}
       <header className='border border-black rounded-lg p-3 text-xl bg-data-blue'>
-        <h1 className='font-medium text-data-text'>Personal Information</h1>
+        <h1 className='font-medium text-2xl text-data-text text-center'>Personal Information</h1>
       </header>
 
       {/* Personal Information Data */}

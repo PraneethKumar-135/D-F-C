@@ -35,14 +35,13 @@ const HotelInformation = () => {
   const [HotelInfoData, SetHotelInfoData] = useState({
     HotelName: '',
     MarshaCode: '',
-    ManagedHotel: false,
-    FranchiseHotel: false,
+    isTheHotel: '',
     Country: "",
     State: "",
     City: "",
     ZipCode: ""
   })
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(updateHotelInformation(HotelInfoData))
   })
   const handleHoteInfoData = (e) => {
@@ -62,8 +61,7 @@ const HotelInformation = () => {
   const handleCheckboxChange = (data) => {
     SetHotelInfoData((prevData) => ({
       ...prevData,
-      ManagedHotel: data === 'Managed' ? !prevData.ManagedHotel : prevData.ManagedHotel,
-      FranchiseHotel: data === 'Franchise' ? !prevData.FranchiseHotel : prevData.FranchiseHotel,
+      isTheHotel: data
     }));
   }
   console.log(HotelInfoData);
@@ -72,11 +70,11 @@ const HotelInformation = () => {
   return (
     <div className='flex flex-col gap-5'>
       <header className='border border-black rounded-lg p-3 text-xl bg-data-blue'>
-      <div className='flex items-center justify-between px-5'>
+        <div className='flex items-center justify-between px-5'>
           <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
           <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
         </div>
-        <h1 className='font-medium text-data-text text-center'>Hotel Information</h1>
+        <h1 className='font-medium text-2xl text-data-text text-center'>Hotel Information</h1>
       </header>
 
       <div className='border border-black rounded-lg px-10 py-3'>
@@ -100,7 +98,7 @@ const HotelInformation = () => {
                 id='Managed'
                 name='Managed'
                 type='checkbox'
-                checked={HotelInfoData.ManagedHotel}
+                checked={HotelInfoData.isTheHotel === 'Managed' ? true : false}
                 onChange={() => handleCheckboxChange('Managed')}
               />
             </p>
@@ -111,7 +109,7 @@ const HotelInformation = () => {
                 id='Franchise'
                 name='Franchise'
                 type='checkbox'
-                checked={HotelInfoData.FranchiseHotel}
+                checked={HotelInfoData.isTheHotel === 'Franchise' ? true : false}
                 onChange={() => handleCheckboxChange('Franchise')}
               />
             </p>

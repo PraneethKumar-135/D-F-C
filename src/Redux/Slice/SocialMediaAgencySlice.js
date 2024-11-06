@@ -2,18 +2,18 @@ import { createSlice } from "@reduxjs/toolkit";
 
 
 export const SocialMediaAgencySlice = createSlice({
-    name:"SocialMediaInfo",
+    name:"SocialMediaAgencyInfo",
     initialState:{
         AgencyInformation:{}
     },
     reducers:{
-        updateSocialMediaAccounts:(state,action) => {
+        updateSocialMediaAgency:(state,action) => {
             console.log(action.payload);
             state.AgencyInformation = action.payload
         }
     }
 });
 
-export const { updateSocialMediaAccounts } = SocialMediaAgencySlice.actions;
+export const { updateSocialMediaAgency } = SocialMediaAgencySlice.actions;
 
 export default SocialMediaAgencySlice.reducer;

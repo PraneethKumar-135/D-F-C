@@ -3,10 +3,13 @@ import PersonalInformation from '../Components/personalInformation';
 import HotelInformation from '../Components/hotelInformation';
 import SocialMediaInfo from '../Components/SocialMediaInfo';
 import SocialMediaInfo2 from '../Components/SocialMediaInfo2';
+import { useSelector } from 'react-redux';
 // App Component
 function MainPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = 4;
+    const SliceData = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation)
+
 
     const handleNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));

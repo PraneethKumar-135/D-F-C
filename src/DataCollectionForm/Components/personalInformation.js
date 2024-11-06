@@ -47,7 +47,7 @@ const PersonalInformation = () => {
       ...prevData,
       [name]: value,
     }));
-    dispatch(updatePersonalInformation([Personaldata]))
+    dispatch(updatePersonalInformation(Personaldata))
   };
 
   const handleCountryCodeChange = (callingCode) => {

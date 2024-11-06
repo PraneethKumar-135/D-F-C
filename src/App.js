@@ -11,11 +11,11 @@ const App = () => {
   return (
     <div>
       <Provider store={store}>
-        <MainPage />
+        {/* <MainPage /> */}
         {/* < PersonalInformation/> */}
         {/* < HotelInformation/> */}
         {/* < SocialMediaInfo/> */}
-        {/* <SocialMediaInfo2/> */}
+        <SocialMediaInfo2/>
       </Provider>
     </div>
   )

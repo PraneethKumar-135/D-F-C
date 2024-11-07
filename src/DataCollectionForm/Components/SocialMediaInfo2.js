@@ -62,12 +62,12 @@ const SocialMediaInfo2 = () => {
 
     return (
         <div className='flex flex-col gap-5'>
-            <header className='border border-black rounded-lg p-3 text-xl bg-data-blue'>
-                <div className='flex items-center justify-between px-5'>
-                    <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
-                    <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
-                </div>
+            <header className='border border-black rounded-lg p-3 text-xl bg-data-blue flex items-center justify-between px-5'>
+
+                <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
                 <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Information</h1>
+                <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
+
             </header>
             <div className='border border-black rounded-lg px-5 py-3 '>
                 <p>Please Check the social media account you have for the above-mentioned hotel:</p>
@@ -93,17 +93,17 @@ const SocialMediaInfo2 = () => {
                     <div key={platform} className='flex flex-col gap-5 mt-5'>
                         {/* Section 1 */}
                         <section>
-                            <div className='border border-black rounded-lg p-5 text-xl bg-data-blue'>
+                            <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
                                 <h1 className='text-sm font-normal'>
                                     Section 1: Please provide contact information for the person managing the {platform} account.
                                 </h1>
                             </div>
-                            <div className='flex gap-10 mt-5'>
+                            <div className='flex gap-10 mt-5 ml-10'>
                                 <section className='font-semibold'>{platform}</section>
                                 <section className='px-10 py-3 w-full'>
                                     <div className='flex items-center gap-5 py-2'>
                                         <div className='flex flex-col w-[50%]'>
-                                            <label className="font-medium pb-1">Hotel / Social Media Agency Name</label>
+                                            <label className="pb-1">Hotel / Social Media Agency Name</label>
                                             <input
                                                 placeholder="Enter Agency Name"
                                                 className='border h-9 rounded-lg p-2'
@@ -112,7 +112,7 @@ const SocialMediaInfo2 = () => {
                                             />
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
-                                            <label className="font-medium pb-1">Contact Person Name</label>
+                                            <label className="pb-1">Contact Person Name</label>
                                             <input
                                                 placeholder="Enter Contact Person Name"
                                                 className='border h-9 rounded-lg p-2'
@@ -124,7 +124,7 @@ const SocialMediaInfo2 = () => {
 
                                     <div className='flex items-center gap-5 py-2'>
                                         <div className='flex flex-col w-[50%]'>
-                                            <label className="font-medium pb-1">Email Address</label>
+                                            <label className="pb-1">Email Address</label>
                                             <input
                                                 placeholder="Email Address"
                                                 className='border h-9 rounded-lg p-2'
@@ -133,7 +133,7 @@ const SocialMediaInfo2 = () => {
                                             />
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
-                                            <label className="font-medium pb-1">Phone Number</label>
+                                            <label className="pb-1">Phone Number</label>
                                             <input
                                                 placeholder="Enter Phone Number"
                                                 className='border h-9 rounded-lg p-2'
@@ -148,15 +148,15 @@ const SocialMediaInfo2 = () => {
 
                         {/* Section 2 */}
                         <section>
-                            <div className='border border-black rounded-lg p-5 text-xl bg-data-blue'>
+                            <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
                                 <h1 className='text-sm font-normal'>Section 2 : Please input the below Information for {platform} Social Media application that your hotel is using.</h1>
                             </div>
-                            <div className='flex gap-10 mt-5'>
+                            <div className='flex gap-10 mt-5 ml-10'>
                                 <section className='font-semibold'>{platform}</section>
                                 <section className='px-10 py-3 w-full'>
                                     <div className='flex items-center gap-5 py-2'>
                                         <div className='flex flex-col w-[50%]'>
-                                            <label className="font-medium pb-1">{platform} URL</label>
+                                            <label className="pb-1">{platform} URL</label>
                                             <input
                                                 placeholder={`${platform} URL`}
                                                 className='border h-9 rounded-lg p-2'
@@ -165,7 +165,7 @@ const SocialMediaInfo2 = () => {
                                             />
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
-                                            <label className="font-medium pb-1">{platform} Page ID</label>
+                                            <label className="pb-1">{platform} Page ID</label>
                                             <input
                                                 placeholder={`${platform} Page ID`}
                                                 className='border h-9 rounded-lg p-2'
@@ -201,7 +201,7 @@ const SocialMediaInfo2 = () => {
                         {/* Section 3 */}
                         {!socialMediaData[platform]?.isInFBM && (
                             <section>
-                                <div className='border border-black rounded-lg p-5 text-xl bg-data-blue'>
+                                <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
                                     <h1 className='text-sm font-normal'>Section 3:  If your {platform} page in  not enrolled in Marriott’s Facebook Business Manager (MI {platform.slice(0, 1)}BM), then update below                                    </h1>
                                 </div>
                                 <section className='flex flex-col items-center justify-center py-3'>

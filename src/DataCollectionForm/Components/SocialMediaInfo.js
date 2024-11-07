@@ -29,18 +29,18 @@ const SocialMediaInfo = () => {
 
     return (
         <div className='flex flex-col gap-5'>
-            <header className='border border-black rounded-lg p-3 text-xl bg-data-blue'>
-                <div className='flex items-center justify-between px-5'>
-                    <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
-                    <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
-                </div>
+            <header className='border border-black rounded-lg p-3 text-xl bg-data-blue flex items-center justify-between px-5'>
+
+                <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
                 <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Agency Information</h1>
+                <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
+
             </header>
             <div className='border border-black rounded-lg px-5 py-3 '>
                 <p>Complete only if your hotel uses an outside agency to manage the hotel's social media accounts</p>
                 <section className='flex items-center gap-5 pt-7 pb-4'>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="font-medium pb-1">Name of Agency <span className='text-red-600 ml-1'>*</span></label>
+                        <label className="pb-1">Name of Agency <span className='text-red-600 ml-1'>*</span></label>
                         <input
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.NameOfAgency}
@@ -50,7 +50,7 @@ const SocialMediaInfo = () => {
                         />
                     </aside>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="font-medium pb-1">Primary Contact<span className='text-red-600 ml-1'>*</span></label>
+                        <label className="pb-1">Primary Contact<span className='text-red-600 ml-1'>*</span></label>
                         <input
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.PrimaryContactName}
@@ -62,7 +62,7 @@ const SocialMediaInfo = () => {
                 </section>
                 <section className='flex items-center gap-5 pb-7'>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="font-medium pb-1">Primary Contact Email Address </label>
+                        <label className="pb-1">Primary Contact Email Address </label>
                         <input
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.PrimaryContactEmail}
@@ -72,7 +72,7 @@ const SocialMediaInfo = () => {
                         />
                     </aside>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="font-medium pb-1">Primary Contact Phone Number</label>
+                        <label className="pb-1">Primary Contact Phone Number</label>
                         <input
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.PrimaryContactNumber}

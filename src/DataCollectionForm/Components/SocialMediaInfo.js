@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
+import { updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 const SocialMediaInfo = () => {
     const dispatch = useDispatch()
@@ -23,9 +24,16 @@ const SocialMediaInfo = () => {
 
     };
 
-    useEffect(() => {
+    if (
+        SocialMediaData.NameOfAgency &&
+        SocialMediaData.PrimaryContactName &&
+        SocialMediaData.PrimaryContactEmail &&
+        SocialMediaData.PrimaryContactNumber &&
+        SocialMediaData.HotelApplicable
+    ) {
         dispatch(updateSocialMediaAgency(SocialMediaData));
-    }, [SocialMediaData, dispatch]);
+        dispatch(updatedCurrentPage(4));
+    }
 
     return (
         <div className='flex flex-col gap-5'>

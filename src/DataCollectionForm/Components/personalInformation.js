@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
 import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
-import { updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
-import { useDispatch } from 'react-redux';
+import { updatedCurrentPage, updateinputs, updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CountrySelect = ({ onChange, labels, ...rest }) => (
   <select
@@ -55,6 +55,7 @@ const PersonalInformation = () => {
       CountryCode: `+${callingCode}`,
     }));
   };
+
   if (
     Personaldata.FirstName &&
     Personaldata.LastName &&
@@ -64,11 +65,13 @@ const PersonalInformation = () => {
     Personaldata.CountryCode &&
     Personaldata.PhoneNumber
   ) {
+    // alert("Please fill all the required fields")
     dispatch(updatePersonalInformation(Personaldata));
+    dispatch(updatedCurrentPage(2))
+    dispatch(updateinputs(true))
   }
-
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex flex-col gap-4 pb-5'>
       {/* Data Collection Form */}
       <header className='border border-black py-1 rounded-lg bg-data-blue'>
         <div className='flex items-center justify-between px-5'>
@@ -96,6 +99,7 @@ const PersonalInformation = () => {
               placeholder="Enter Your First Name"
               className='border h-9 rounded-lg p-2'
             />
+            {/* {errorInputs && <span className='text-red-500 pl-1'>Enter First Name</span>} */}
           </aside>
           <aside className='flex flex-col w-[50%]'>
             <label className="pb-1">Last Name <span className='text-red-600 ml-1'>*</span></label>

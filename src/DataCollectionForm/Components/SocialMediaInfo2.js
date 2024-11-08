@@ -10,7 +10,7 @@ const SocialMediaInfo2 = () => {
         Linkedin: false,
         Pinterest: false,
         TikTok: false,
-        X: false,
+        "X (Twitter)": false,
         YouTube: false,
         Others: false,
         'I Dont Know': false,

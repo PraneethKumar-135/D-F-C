@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import countries from 'i18n-iso-countries';
 import { useDispatch } from 'react-redux';
 import { updateHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
+import { updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
 const CountrySelect = ({ onChange, labels, ...rest }) => (
@@ -31,7 +32,7 @@ CountrySelect.propTypes = {
   labels: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 const HotelInformation = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [HotelInfoData, SetHotelInfoData] = useState({
     HotelName: '',
     MarshaCode: '',
@@ -41,9 +42,7 @@ const HotelInformation = () => {
     City: "",
     ZipCode: ""
   })
-  useEffect(() => {
-    dispatch(updateHotelInformation(HotelInfoData))
-  })
+
   const handleHoteInfoData = (e) => {
     const { name, value } = e.target;
     SetHotelInfoData((prevData) => ({
@@ -64,7 +63,18 @@ const HotelInformation = () => {
       isTheHotel: data
     }));
   }
-  console.log(HotelInfoData);
+  if (
+    HotelInfoData.HotelName &&
+    HotelInfoData.MarshaCode &&
+    HotelInfoData.isTheHotel &&
+    HotelInfoData.Country &&
+    HotelInfoData.State &&
+    HotelInfoData.City &&
+    HotelInfoData.ZipCode
+  ) {
+    dispatch(updateHotelInformation(HotelInfoData))
+    dispatch(updatedCurrentPage(3))
+  }
 
 
   return (

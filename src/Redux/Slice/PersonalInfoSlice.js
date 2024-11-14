@@ -5,7 +5,8 @@ export const PersonalInfoSlice = createSlice({
     initialState: {
         PersonalInfoData: {},
         currentPage: 1,
-        errorInputs: false
+
+        mainPageToogle: false
     },
     reducers: {
         updatePersonalInformation: (state, action) => {
@@ -16,12 +17,13 @@ export const PersonalInfoSlice = createSlice({
             // console.log(action.payload);
             state.currentPage = action.payload;
         },
-        updateinputs: (state, action) => {
-            state.errorInputs = action.payload;
+        editMainPage: (state, action) => {
+            console.log(action.payload);
+            state.mainPageToogle = action.payload;
         }
     },
 })
 
-export const { updatePersonalInformation, updatedCurrentPage, updateinputs } = PersonalInfoSlice.actions;
+export const { updatePersonalInformation, updatedCurrentPage, updateinputs, editMainPage } = PersonalInfoSlice.actions;
 
 export default PersonalInfoSlice.reducer;

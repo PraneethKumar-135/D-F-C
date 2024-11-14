@@ -3,7 +3,7 @@ import { getCountries } from 'react-phone-number-input';
 import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
 import countries from 'i18n-iso-countries';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
 import { updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
@@ -33,6 +33,8 @@ CountrySelect.propTypes = {
 };
 const HotelInformation = () => {
   const dispatch = useDispatch();
+  const sliceData = useSelector((state) => state.hotelInformation.HotelData)
+  const [showNotification, setShowNotification] = useState(true);
   const [HotelInfoData, SetHotelInfoData] = useState({
     HotelName: '',
     MarshaCode: '',
@@ -43,12 +45,36 @@ const HotelInformation = () => {
     ZipCode: ""
   })
 
+  const isFormComplete = (data) => {
+    return (
+      data.HotelName &&
+      data.MarshaCode &&
+      data.isTheHotel &&
+      data.Country &&
+      data.State &&
+      data.City &&
+      data.ZipCode
+    )
+  }
   const handleHoteInfoData = (e) => {
     const { name, value } = e.target;
-    SetHotelInfoData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    const updatedData = {
+      ...HotelInfoData,
+      [name]: value, // This ensures the correct field is updated in the state
+    };
+
+    SetHotelInfoData(updatedData);
+
+    if (isFormComplete(updatedData)) {
+      dispatch(updateHotelInformation(updatedData))
+      dispatch(updatedCurrentPage(3))
+    } else {
+      setShowNotification(true)
+      setTimeout(() => {
+        setShowNotification(false)
+      }, 3000)
+    }
   }
 
   const handleCountryCodeChange = (countryName) => {
@@ -57,24 +83,17 @@ const HotelInformation = () => {
       Country: countryName,
     }));
   };
+
   const handleCheckboxChange = (data) => {
     SetHotelInfoData((prevData) => ({
       ...prevData,
       isTheHotel: data
     }));
   }
-  if (
-    HotelInfoData.HotelName &&
-    HotelInfoData.MarshaCode &&
-    HotelInfoData.isTheHotel &&
-    HotelInfoData.Country &&
-    HotelInfoData.State &&
-    HotelInfoData.City &&
-    HotelInfoData.ZipCode
-  ) {
-    dispatch(updateHotelInformation(HotelInfoData))
-    dispatch(updatedCurrentPage(3))
-  }
+
+  useEffect(() => {
+    SetHotelInfoData(sliceData)
+  }, [sliceData])
 
 
   return (
@@ -84,15 +103,32 @@ const HotelInformation = () => {
         <h1 className='font-medium text-2xl text-data-text'>Hotel Information</h1>
         <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
       </header>
-
+      {showNotification && (
+         <div
+         className={`transition-opacity duration-1000 ease-in-out ${showNotification ? 'opacity-100' : 'opacity-0'}`}
+         style={{
+           position: 'fixed',
+           top: '20px',
+           left: '50%',
+           transform: 'translateX(-50%)',
+           backgroundColor: '#f44336',
+           color: '#fff',
+           padding: '10px',
+           borderRadius: '5px',
+           zIndex: 999,
+         }}
+       >
+         Please fill in all required fields!
+       </div>
+      )}
       <div className='border border-black rounded-lg px-10 py-2'>
         <aside className='flex flex-col py-1'>
           <label className="pb-1">Name of the Hotel<span className='text-red-600 ml-1'>*</span></label>
-          <input name='HotelName' value={HotelInfoData.HotelName} onChange={handleHoteInfoData} placeholder="Enter Hotel Name" className='border h-9 rounded-lg p-2' />
+          <input name='HotelName' value={HotelInfoData.HotelName || ""} onChange={handleHoteInfoData} placeholder="Enter Hotel Name" className='border h-9 rounded-lg p-2' />
         </aside>
         <aside className='flex flex-col py-1'>
           <label className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
-          <input name='MarshaCode' value={HotelInfoData.MarshaCode} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className='border h-9 rounded-lg p-2' />
+          <input name='MarshaCode' value={HotelInfoData.MarshaCode || ""} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className='border h-9 rounded-lg p-2' />
         </aside>
 
         <section className='flex flex-col py-1'>
@@ -137,17 +173,17 @@ const HotelInformation = () => {
               </aside>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
-                <input name='State' value={HotelInfoData.State} onChange={handleHoteInfoData} placeholder="Enter State" className='border h-9 rounded-lg p-2' />
+                <input name='State' value={HotelInfoData.State || ""} onChange={handleHoteInfoData} placeholder="Enter State" className='border h-9 rounded-lg p-2' />
               </aside>
             </section>
             <section className='flex items-center gap-5 py-2'>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">City <span className='text-red-600 ml-1'>*</span></label>
-                <input name='City' value={HotelInfoData.City} onChange={handleHoteInfoData} placeholder="Enter City" className='border h-9 rounded-lg p-2' />
+                <input name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className='border h-9 rounded-lg p-2' />
               </aside>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">Zip Code <span className='text-red-600 ml-1'>*</span></label>
-                <input name='ZipCode' value={HotelInfoData.ZipCode} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className='border h-9 rounded-lg p-2' />
+                <input name='ZipCode' value={HotelInfoData.ZipCode || ""} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className='border h-9 rounded-lg p-2' />
               </aside>
             </section>
           </div>

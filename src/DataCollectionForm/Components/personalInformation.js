@@ -30,7 +30,9 @@ CountrySelect.propTypes = {
 };
 
 const PersonalInformation = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const sliceData = useSelector((state) => state.personalInformation.PersonalInfoData)
+  // const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
   const [Personaldata, setPersonalData] = useState({
     FirstName: "",
     LastName: "",
@@ -41,13 +43,33 @@ const PersonalInformation = () => {
     PhoneNumber: "",
   });
 
+  const isFormComplete = (data) => {
+    return (
+      data.FirstName &&
+      data.LastName &&
+      data.Title &&
+      data.Email &&
+      data.Eid &&
+      data.CountryCode &&
+      data.PhoneNumber
+    )
+  }
+
   const handlePersonalData = (e) => {
     const { name, value } = e.target;
-    setPersonalData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const updatedData = {
+      ...Personaldata,
+      [name]: value, // This ensures the correct field is updated in the state
+    };
+
+    setPersonalData(updatedData);
+
+    if (isFormComplete(updatedData)) {
+      dispatch(updatePersonalInformation(updatedData)); // Use updatedData instead of Personaldata
+      dispatch(updatedCurrentPage(2));
+    }
   };
+
 
   const handleCountryCodeChange = (callingCode) => {
     setPersonalData((prevData) => ({
@@ -56,20 +78,10 @@ const PersonalInformation = () => {
     }));
   };
 
-  if (
-    Personaldata.FirstName &&
-    Personaldata.LastName &&
-    Personaldata.Title &&
-    Personaldata.Email &&
-    Personaldata.Eid &&
-    Personaldata.CountryCode &&
-    Personaldata.PhoneNumber
-  ) {
-    // alert("Please fill all the required fields")
-    dispatch(updatePersonalInformation(Personaldata));
-    dispatch(updatedCurrentPage(2))
-    dispatch(updateinputs(true))
-  }
+  useEffect(() => {
+    setPersonalData(sliceData)
+  }, [sliceData])
+
   return (
     <div className='flex flex-col gap-4 pb-5'>
       {/* Data Collection Form */}
@@ -94,7 +106,7 @@ const PersonalInformation = () => {
             <label className="pb-1">First Name <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="FirstName"
-              value={Personaldata.FirstName}
+              value={Personaldata.FirstName || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your First Name"
               className='border h-9 rounded-lg p-2'
@@ -105,7 +117,7 @@ const PersonalInformation = () => {
             <label className="pb-1">Last Name <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="LastName"
-              value={Personaldata.LastName}
+              value={Personaldata.LastName || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Last Name"
               className='border h-9 rounded-lg p-2'
@@ -118,7 +130,7 @@ const PersonalInformation = () => {
             <label className="pb-1">Title <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="Title"
-              value={Personaldata.Title}
+              value={Personaldata.Title || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Title"
               className='border h-9 rounded-lg p-2'
@@ -128,7 +140,7 @@ const PersonalInformation = () => {
             <label className="pb-1">Email <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="Email"
-              value={Personaldata.Email}
+              value={Personaldata.Email || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Email"
               className='border h-9 rounded-lg p-2'
@@ -140,7 +152,7 @@ const PersonalInformation = () => {
           <label className="pb-1">EID <span className='text-red-600 ml-1'>*</span></label>
           <input
             name="Eid"
-            value={Personaldata.Eid}
+            value={Personaldata.Eid || ""}
             onChange={handlePersonalData}
             placeholder="Enter Employee ID"
             className='border h-9 rounded-lg p-2'
@@ -159,7 +171,7 @@ const PersonalInformation = () => {
             <label className="pb-1">Phone <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="PhoneNumber"
-              value={Personaldata.PhoneNumber}
+              value={Personaldata.PhoneNumber || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Phone Number"
               className='border h-9 rounded-lg p-2'

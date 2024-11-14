@@ -5,10 +5,12 @@ import SocialMediaInfo from '../Components/SocialMediaInfo';
 import SocialMediaInfo2 from '../Components/SocialMediaInfo2';
 import AllData from './AllData';
 import { useDispatch, useSelector } from 'react-redux';
-import { updatedCurrentPage, updateinputs } from '../../Redux/Slice/PersonalInfoSlice';
+import { editMainPage } from '../../Redux/Slice/PersonalInfoSlice';
+
 
 function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
+    const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
     const [currentPage, setCurrentPage] = useState(PageUpdate);
     const [Loading, setLoading] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
@@ -34,7 +36,6 @@ function MainPage() {
     };
 
     const handlePreviousPage = () => {
-
         setTransitioning(true);
         setTimeout(() => {
             setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
@@ -44,9 +45,10 @@ function MainPage() {
     const handleAlldataPage = () => {
         setLoading(true);
         setTimeout(() => {
-            setAllData(true);
+            setAllData(true)
         }, 2000)
         setAllData(false);
+        dispatch(editMainPage(false));
     }
 
     const pageComponents = {
@@ -55,6 +57,14 @@ function MainPage() {
         3: <SocialMediaInfo />,
         4: <SocialMediaInfo2 />
     };
+    useEffect(() => {
+        setCurrentPage(PageUpdate);
+        setAllData(false);
+        setTimeout(() => {
+            setLoading(false)
+        }, 1000)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mainPageToogle])
     console.log("CurrentPage: " + currentPage);
 
     return (
@@ -97,7 +107,6 @@ function MainPage() {
                         </>
                     )}
                 </div>
-
             )}
         </>
     );

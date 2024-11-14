@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
+import { updateSocialMediaAccounts } from '../../Redux/Slice/SocialMediaSlice';
 
 const SocialMediaInfo2 = () => {
     const dispatch = useDispatch();
@@ -57,7 +57,7 @@ const SocialMediaInfo2 = () => {
 
     console.log(socialMediaData);
     useEffect(() => {
-        dispatch(updateSocialMediaAgency(socialMediaData))
+        dispatch(updateSocialMediaAccounts(socialMediaData))
     }, [socialMediaData, dispatch])
 
     return (

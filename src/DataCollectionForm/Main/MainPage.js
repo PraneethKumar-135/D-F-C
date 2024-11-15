@@ -5,19 +5,20 @@ import SocialMediaInfo from '../Components/SocialMediaInfo';
 import SocialMediaInfo2 from '../Components/SocialMediaInfo2';
 import AllData from './AllData';
 import { useDispatch, useSelector } from 'react-redux';
-import { editMainPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { editMainPage, updatebuttonClick } from '../../Redux/Slice/PersonalInfoSlice';
 
 
 function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
-    const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
-    const [currentPage, setCurrentPage] = useState(PageUpdate);
+    const PageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
+    const Buttonclick = useSelector((state) => state.personalInformation.buttonClick)
+    const [currentPage, setCurrentPage] = useState(4);
+    const [buttonclicked, setButtonclick] = useState(Buttonclick);
     const [Loading, setLoading] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
     const [Alldata, setAllData] = useState(false)
     const totalPages = 4;
     const dispatch = useDispatch();
-
 
     const LoadingPage = () => (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-50 z-10 ">
@@ -25,14 +26,23 @@ function MainPage() {
         </div>
     );
 
-
-
     const handleNextPage = () => {
         setTransitioning(true);
-        setTimeout(() => {
-            setCurrentPage(PageUpdate);
-            setTransitioning(false);
-        }, 300);
+        if (Buttonclick) {
+            setButtonclick(false)
+            setTimeout(() => {
+                setCurrentPage(PageUpdate);
+                setTransitioning(false);
+                dispatch(updatebuttonClick(false))
+            }, 300);
+        } else {
+            setButtonclick(true)
+            setTimeout(() => {
+                setCurrentPage(PageUpdate);
+                setTransitioning(false);
+
+            }, 0);
+        }
     };
 
     const handlePreviousPage = () => {
@@ -42,13 +52,16 @@ function MainPage() {
             setTransitioning(false);
         }, 300);
     };
+
     const handleAlldataPage = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setAllData(true)
-        }, 2000)
-        setAllData(false);
-        dispatch(editMainPage(false));
+        if (Buttonclick) {
+            setLoading(true);
+            setTimeout(() => {
+                setAllData(true)
+            }, 2000)
+            setAllData(false);
+            dispatch(editMainPage(false));
+        }
     }
 
     const pageComponents = {
@@ -57,15 +70,18 @@ function MainPage() {
         3: <SocialMediaInfo />,
         4: <SocialMediaInfo2 />
     };
+
     useEffect(() => {
-        setCurrentPage(PageUpdate);
+        setCurrentPage(4);
         setAllData(false);
         setTimeout(() => {
             setLoading(false)
         }, 1000)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainPageToogle])
+    }, [PageToogle])
+
     console.log("CurrentPage: " + currentPage);
+    console.log("Button: " + buttonclicked);
 
     return (
         <>
@@ -82,7 +98,26 @@ function MainPage() {
                                 </span>
                             )}
 
-                            <div className={`w-[94%] absolute  ${currentPage === 1 ? "left-5" : "left-10"}  transition-opacity duration-300 ${transitioning ? "opacity-0" : "opacity-100"}`}>
+                            <div className={`w-[94%] absolute  ${currentPage === 1 ? "left-5" : "left-10"}  transition-opacity ${Buttonclick ? "duration-300" : "duration-0"} ${transitioning ? "opacity-0" : "opacity-100"}`}>
+                                {buttonclicked && (
+                                    <div
+                                        className="fixed top-1/2 left-1/2 w-[30%] h-[20%] bg-white border border-black text-center p-4 rounded-md z-50"
+                                        style={{ transform: 'translate(-50%, -50%)' }}
+                                        role="dialog"
+                                        aria-labelledby="popup-message"
+                                    >
+                                        <div id="popup-message" className="mb-4">
+                                            Please fill in all required fields!
+                                        </div>
+                                        <button
+                                            className="bg-blue-500 text-white px-4 py-2 rounded-sm hover:bg-blue-600"
+                                            onClick={() => setButtonclick(false)}
+                                        >
+                                            Ok
+                                        </button>
+                                    </div>
+                                )}
+
                                 {pageComponents[currentPage] || null}
 
                                 {currentPage === 4 && (

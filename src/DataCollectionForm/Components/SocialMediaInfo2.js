@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateSocialMediaAccounts } from '../../Redux/Slice/SocialMediaSlice';
+import { updatebuttonClick } from '../../Redux/Slice/PersonalInfoSlice';
 
 const SocialMediaInfo2 = () => {
     const dispatch = useDispatch();
@@ -58,17 +59,18 @@ const SocialMediaInfo2 = () => {
     console.log(socialMediaData);
     useEffect(() => {
         dispatch(updateSocialMediaAccounts(socialMediaData))
+        dispatch(updatebuttonClick(true));
     }, [socialMediaData, dispatch])
 
     return (
         <div className='flex flex-col gap-5'>
+            
             <header className='border border-black rounded-lg p-3 text-xl bg-data-blue flex items-center justify-between px-5'>
-
                 <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
                 <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Information</h1>
                 <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
-
             </header>
+
             <div className='border border-black rounded-lg px-5 py-3 '>
                 <p>Please Check the social media account you have for the above-mentioned hotel:</p>
                 <div className='flex flex-col gap-2 mt-3'>

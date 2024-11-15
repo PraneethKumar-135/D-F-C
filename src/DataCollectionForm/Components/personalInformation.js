@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
 import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
-import { updatedCurrentPage, updateinputs, updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
+import { updatebuttonClick, updatedCurrentPage, updateinputs, updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CountrySelect = ({ onChange, labels, ...rest }) => (
@@ -67,6 +67,7 @@ const PersonalInformation = () => {
     if (isFormComplete(updatedData)) {
       dispatch(updatePersonalInformation(updatedData)); // Use updatedData instead of Personaldata
       dispatch(updatedCurrentPage(2));
+      dispatch(updatebuttonClick(true));
     }
   };
 
@@ -80,7 +81,8 @@ const PersonalInformation = () => {
 
   useEffect(() => {
     setPersonalData(sliceData)
-  }, [sliceData])
+    dispatch(updatebuttonClick(true));
+  }, [dispatch, sliceData])
 
   return (
     <div className='flex flex-col gap-4 pb-5'>

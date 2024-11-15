@@ -13,9 +13,9 @@ const App = () => {
   return (
     <div>
       <Provider store={store}>
-        {/* <MainPage /> */}
+        <MainPage />
         {/* < PersonalInformation/> */}
-        < HotelInformation/>
+        {/* < HotelInformation/> */}
         {/* < SocialMediaInfo/> */}
         {/* <SocialMediaInfo2/> */}
         {/* <AllData/> */}

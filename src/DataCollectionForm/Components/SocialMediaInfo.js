@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
-import { updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 const SocialMediaInfo = () => {
     const dispatch = useDispatch();
@@ -40,13 +40,15 @@ const SocialMediaInfo = () => {
         if (isFormComplete(updatedData)) {
             dispatch(updateSocialMediaAgency(updatedData));
             dispatch(updatedCurrentPage(4));
+            dispatch(updatebuttonClick(true));
         }
     };
 
     // Update state when slice data changes
     useEffect(() => {
         SetSocialMediaData(sliceData);
-    }, [sliceData]);
+        dispatch(updatebuttonClick(true));
+    }, [dispatch, sliceData]);
 
     return (
         <div className='flex flex-col gap-5'>

@@ -12,7 +12,7 @@ function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
     const PageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
     const Buttonclick = useSelector((state) => state.personalInformation.buttonClick)
-    const [currentPage, setCurrentPage] = useState(4);
+    const [currentPage, setCurrentPage] = useState(PageUpdate);
     const [buttonclicked, setButtonclick] = useState(Buttonclick);
     const [Loading, setLoading] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
@@ -27,7 +27,7 @@ function MainPage() {
     );
 
     const handleNextPage = () => {
-        setTransitioning(true);
+        setTransitioning(true); 
         if (Buttonclick) {
             setButtonclick(false)
             setTimeout(() => {
@@ -37,11 +37,8 @@ function MainPage() {
             }, 300);
         } else {
             setButtonclick(true)
-            setTimeout(() => {
-                setCurrentPage(PageUpdate);
-                setTransitioning(false);
-
-            }, 0);
+            setCurrentPage(PageUpdate);
+            setTransitioning(false);
         }
     };
 
@@ -59,8 +56,9 @@ function MainPage() {
             setTimeout(() => {
                 setAllData(true)
             }, 2000)
-            setAllData(false);
             dispatch(editMainPage(false));
+        } else {
+            setButtonclick(true)
         }
     }
 
@@ -72,7 +70,7 @@ function MainPage() {
     };
 
     useEffect(() => {
-        setCurrentPage(4);
+        setCurrentPage(PageUpdate);
         setAllData(false);
         setTimeout(() => {
             setLoading(false)

@@ -81,7 +81,7 @@ const PersonalInformation = () => {
 
   useEffect(() => {
     setPersonalData(sliceData)
-    dispatch(updatebuttonClick(true));
+    // dispatch(updatebuttonClick(true));
   }, [dispatch, sliceData])
 
   return (

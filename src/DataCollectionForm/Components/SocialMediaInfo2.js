@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateSocialMediaAccounts } from '../../Redux/Slice/SocialMediaSlice';
 import { updatebuttonClick } from '../../Redux/Slice/PersonalInfoSlice';
 
 const SocialMediaInfo2 = () => {
     const dispatch = useDispatch();
-    const [socialMediaAccount, setSocialMediaAccount] = useState({
+    const sliceData = useSelector((state) => state.socialMediaInfo.SocialMediaInformation);
+    const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
+    const initialAccountsState = {
         Facebook: false,
         Instagram: false,
         Linkedin: false,
@@ -15,7 +17,8 @@ const SocialMediaInfo2 = () => {
         YouTube: false,
         Others: false,
         'I Dont Know': false,
-    });
+    };
+    const [socialMediaAccount, setSocialMediaAccount] = useState(initialAccountsState);
 
     const [socialMediaData, setSocialMediaData] = useState({});
 
@@ -33,7 +36,7 @@ const SocialMediaInfo2 = () => {
                     phone: '',
                     url: '',
                     pageID: '',
-                    isInMBM: null,
+                    isInFBM: false,
                     dcubeAdded: null,
                 },
             }));
@@ -46,25 +49,61 @@ const SocialMediaInfo2 = () => {
         }
     };
 
-    const handleFieldChange = (platform, field, value) => {
-        setSocialMediaData((prevData) => ({
-            ...prevData,
-            [platform]: {
-                ...prevData[platform],
-                [field]: value,
-            },
-        }));
+    const isPlatformComplete = (data) => {
+        return (
+            data.agencyName &&
+            data.contactName &&
+            data.email &&
+            data.phone &&
+            data.url &&
+            data.pageID
+        );
     };
 
-    console.log(socialMediaData);
+    const handleFieldChange = (platform, field, value) => {
+        const updatedData = {
+            ...socialMediaData,
+            [platform]: {
+                ...socialMediaData[platform],
+                [field]: value,
+                // Enforce `dcubeAdded` logic based on `isInFBM`
+                ...(field === 'isInFBM' && value === true ? { dcubeAdded: true } : {}),
+            },
+        };
+
+        const incompletePlatforms = Object.keys(updatedData).filter(
+            (platform) => !isPlatformComplete(updatedData[platform])
+        );
+
+        if (incompletePlatforms.length === 0) {
+            // dispatch(updatebuttonClick(false));
+            // } else {
+            dispatch(updateSocialMediaAccounts(updatedData));
+            dispatch(updatebuttonClick(true));
+        }
+
+        setSocialMediaData(updatedData);
+    };
+
+
+
+
+    // console.log(socialMediaData);
     useEffect(() => {
-        dispatch(updateSocialMediaAccounts(socialMediaData))
-        dispatch(updatebuttonClick(true));
-    }, [socialMediaData, dispatch])
+        if (sliceData) {
+            setSocialMediaData(sliceData);
+            const updatedAccountsState = Object.keys(initialAccountsState).reduce((acc, key) => {
+                acc[key] = !!sliceData[key];
+                return acc;
+            }, {});
+            setSocialMediaAccount(updatedAccountsState);
+        }
+    }, [mainPageToogle]);
+
 
     return (
         <div className='flex flex-col gap-5'>
-            
+
             <header className='border border-black rounded-lg p-3 text-xl bg-data-blue flex items-center justify-between px-5'>
                 <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
                 <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Information</h1>
@@ -183,7 +222,7 @@ const SocialMediaInfo2 = () => {
                                             <label>Yes</label>
                                             <input
                                                 type='checkbox'
-                                                checked={socialMediaData[platform]?.isInFBM || false}
+                                                checked={socialMediaData[platform]?.isInFBM === true} // Checked only if explicitly true
                                                 onChange={(e) => handleFieldChange(platform, 'isInFBM', e.target.checked)}
                                             />
                                         </span>
@@ -191,11 +230,12 @@ const SocialMediaInfo2 = () => {
                                             <label>No</label>
                                             <input
                                                 type='checkbox'
-                                                checked={!socialMediaData[platform]?.isInFBM}
+                                                checked={!socialMediaData[platform]?.isInFBM} // Checked only if explicitly false
                                                 onChange={(e) => handleFieldChange(platform, 'isInFBM', !e.target.checked)}
                                             />
                                         </span>
                                     </span>
+
                                 </section>
                             </div>
                         </section>
@@ -204,7 +244,7 @@ const SocialMediaInfo2 = () => {
                         {!socialMediaData[platform]?.isInFBM && (
                             <section>
                                 <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
-                                    <h1 className='text-sm font-normal'>Section 3:  If your {platform} page in  not enrolled in Marriott’s Facebook Business Manager (MI {platform.slice(0, 1)}BM), then update below                                    </h1>
+                                    <h1 className='text-sm font-normal'>Section 3:  If your {platform} page is not enrolled in Marriott’s Facebook Business Manager (MI {platform.slice(0, 1)}BM), update below</h1>
                                 </div>
                                 <section className='flex flex-col items-center justify-center py-3'>
                                     <p>Did you successfully add DCube to your {platform} account?</p>
@@ -228,12 +268,6 @@ const SocialMediaInfo2 = () => {
                                         </span>
                                     </div>
                                 </section>
-                                <section className='text-center'>
-                                    <p>IMPORTANT: If for any account Two Factor Authentication (2FA) is enabled,please disable before submitting this form.</p>
-                                    <p>To Learn how to disable Two-Factor Authentication (2FA), click the FAQ button at the top of the page for instructions.</p>
-                                    <p className='text-red-500'>For any further details please reach us at <span className='underline'>marriott@dcubedata.com</span></p>
-                                </section>
-
                             </section>
                         )}
                     </div>

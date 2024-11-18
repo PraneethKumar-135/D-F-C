@@ -90,7 +90,7 @@ const handleCheckboxChange = (data) => {
 
 useEffect(() => {
   SetHotelInfoData(sliceData)
-  dispatch(updatebuttonClick(true));
+  // dispatch(updatebuttonClick(true));
 }, [dispatch, sliceData])
 
 

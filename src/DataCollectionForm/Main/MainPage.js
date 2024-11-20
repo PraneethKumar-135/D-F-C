@@ -5,7 +5,7 @@ import SocialMediaInfo from '../Components/SocialMediaInfo';
 import SocialMediaInfo2 from '../Components/SocialMediaInfo2';
 import AllData from './AllData';
 import { useDispatch, useSelector } from 'react-redux';
-import { editMainPage, updatebuttonClick } from '../../Redux/Slice/PersonalInfoSlice';
+import { editMainPage, updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 
 function MainPage() {
@@ -33,21 +33,23 @@ function MainPage() {
             setTimeout(() => {
                 setCurrentPage(PageUpdate);
                 setTransitioning(false);
-                dispatch(updatebuttonClick(false))
             }, 300);
+            dispatch(updatebuttonClick(false));
         } else {
             setButtonclick(true)
             setCurrentPage(PageUpdate);
             setTransitioning(false);
+            // dispatch(updatebuttonClick(false))
         }
     };
-
+    
     const handlePreviousPage = () => {
         setTransitioning(true);
         setTimeout(() => {
             setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
             setTransitioning(false);
         }, 300);
+        dispatch(updatebuttonClick(true))
     };
 
     const handleAlldataPage = () => {
@@ -79,7 +81,8 @@ function MainPage() {
     }, [PageToogle])
 
     console.log("CurrentPage: " + currentPage);
-    console.log("Button: " + buttonclicked);
+    // console.log("Button: " + buttonclicked);
+    // console.log("sliceButton",Buttonclick);
 
     return (
         <>

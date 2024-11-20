@@ -66,8 +66,6 @@ const PersonalInformation = () => {
 
     if (isFormComplete(updatedData)) {
       dispatch(updatePersonalInformation(updatedData)); // Use updatedData instead of Personaldata
-      dispatch(updatedCurrentPage(2));
-      dispatch(updatebuttonClick(true));
     }
   };
 
@@ -81,7 +79,6 @@ const PersonalInformation = () => {
 
   useEffect(() => {
     setPersonalData(sliceData)
-    // dispatch(updatebuttonClick(true));
   }, [dispatch, sliceData])
 
   return (

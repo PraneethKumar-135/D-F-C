@@ -6,6 +6,7 @@ import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/Persona
 const SocialMediaInfo = () => {
     const dispatch = useDispatch();
     const sliceData = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation);
+    const PageToogle = useSelector((state) => state.personalInformation.PageToogle)
 
     const [SocialMediaData, SetSocialMediaData] = useState({
         NameOfAgency: '',
@@ -39,16 +40,18 @@ const SocialMediaInfo = () => {
         // Dispatch if form is complete
         if (isFormComplete(updatedData)) {
             dispatch(updateSocialMediaAgency(updatedData));
-            dispatch(updatedCurrentPage(4));
-            dispatch(updatebuttonClick(true));
         }
     };
 
     // Update state when slice data changes
     useEffect(() => {
-        SetSocialMediaData(sliceData);
-        dispatch(updatebuttonClick(true));
-    }, [dispatch, sliceData]);
+        if (PageToogle) {
+            dispatch(updatebuttonClick(true));
+        } else {
+            SetSocialMediaData(sliceData);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [PageToogle]);
 
     return (
         <div className='flex flex-col gap-5'>

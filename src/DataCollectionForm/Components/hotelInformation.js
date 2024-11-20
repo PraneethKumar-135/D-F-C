@@ -33,8 +33,8 @@ CountrySelect.propTypes = {
 };
 const HotelInformation = () => {
   const dispatch = useDispatch();
-  const sliceData = useSelector((state) => state.hotelInformation.HotelData)
-
+  const sliceData = useSelector((state) => state.hotelInformation.HotelData);
+  const PageToogle = useSelector((state) => state.personalInformation.PageToogle);
   const [HotelInfoData, SetHotelInfoData] = useState({
     HotelName: '',
     MarshaCode: '',
@@ -43,7 +43,7 @@ const HotelInformation = () => {
     State: "",
     City: "",
     ZipCode: ""
-  })
+  });
 
   const isFormComplete = (data) => {
     return (
@@ -56,6 +56,7 @@ const HotelInformation = () => {
       data.ZipCode
     )
   }
+  
   const handleHoteInfoData = (e) => {
     const { name, value } = e.target;
 
@@ -68,110 +69,114 @@ const HotelInformation = () => {
 
     if (isFormComplete(updatedData)) {
       dispatch(updateHotelInformation(updatedData))
-      dispatch(updatedCurrentPage(3))
-      dispatch(updatebuttonClick(true));
     }
   }
 
 
-const handleCountryCodeChange = (countryName) => {
-  SetHotelInfoData((prevData) => ({
-    ...prevData,
-    Country: countryName,
-  }));
-};
+  const handleCountryCodeChange = (countryName) => {
+    SetHotelInfoData((prevData) => ({
+      ...prevData,
+      Country: countryName,
+    }));
+  };
 
-const handleCheckboxChange = (data) => {
-  SetHotelInfoData((prevData) => ({
-    ...prevData,
-    isTheHotel: data
-  }));
-}
+  const handleCheckboxChange = (data) => {
+    SetHotelInfoData((prevData) => ({
+      ...prevData,
+      isTheHotel: data
+    }));
+  }
 
-useEffect(() => {
-  SetHotelInfoData(sliceData)
-  // dispatch(updatebuttonClick(true));
-}, [dispatch, sliceData])
+  useEffect(() => {
+    if (PageToogle) {
+      console.log("Loading page details...");  
+      dispatch(updatebuttonClick(true));
+    } else {
+      SetHotelInfoData(sliceData);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PageToogle]);
 
 
-return (
-  <div className='flex flex-col gap-4'>
-    <header className='border border-black rounded-lg p-2 text-xl bg-data-blue flex items-center justify-between px-5'>
-      <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
-      <h1 className='font-medium text-2xl text-data-text'>Hotel Information</h1>
-      <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
-    </header>
 
-    <div className='border border-black rounded-lg px-10 py-2'>
-      <aside className='flex flex-col py-1'>
-        <label className="pb-1">Name of the Hotel<span className='text-red-600 ml-1'>*</span></label>
-        <input name='HotelName' value={HotelInfoData.HotelName || ""} onChange={handleHoteInfoData} placeholder="Enter Hotel Name" className='border h-9 rounded-lg p-2' />
-      </aside>
-      <aside className='flex flex-col py-1'>
-        <label className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
-        <input name='MarshaCode' value={HotelInfoData.MarshaCode || ""} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className='border h-9 rounded-lg p-2' />
-      </aside>
+  return (
+    <div className='flex flex-col gap-4'>
+      <header className='border border-black rounded-lg p-2 text-xl bg-data-blue flex items-center justify-between px-5'>
+        <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
+        <h1 className='font-medium text-2xl text-data-text'>Hotel Information</h1>
+        <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
+      </header>
 
-      <section className='flex flex-col py-1'>
-        <p className='py-1'>This vendor process is intended for managed hotels only. Please check this box to confirm you're at a managed hotel</p>
-        <div className='flex gap-8 py-1'>
-          <p>Is the Hotel</p>
-          <p className='flex items-center'>
-            <span>Managed</span>
-            <input
-              className='relative top-[2px] h-4 w-5 ml-5'
-              id='Managed'
-              name='Managed'
-              type='checkbox'
-              checked={HotelInfoData.isTheHotel === 'Managed' ? true : false}
-              onChange={() => handleCheckboxChange('Managed')}
-            />
-          </p>
-          <p className='flex items-center'>
-            Franchise
-            <input
-              className='relative top-[2px] h-4 w-5 ml-5'
-              id='Franchise'
-              name='Franchise'
-              type='checkbox'
-              checked={HotelInfoData.isTheHotel === 'Franchise' ? true : false}
-              onChange={() => handleCheckboxChange('Franchise')}
-            />
-          </p>
-        </div>
-      </section>
+      <div className='border border-black rounded-lg px-10 py-2'>
+        <aside className='flex flex-col py-1'>
+          <label className="pb-1">Name of the Hotel<span className='text-red-600 ml-1'>*</span></label>
+          <input name='HotelName' value={HotelInfoData.HotelName || ""} onChange={handleHoteInfoData} placeholder="Enter Hotel Name" className='border h-9 rounded-lg p-2' />
+        </aside>
+        <aside className='flex flex-col py-1'>
+          <label className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
+          <input name='MarshaCode' value={HotelInfoData.MarshaCode || ""} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className='border h-9 rounded-lg p-2' />
+        </aside>
 
-      <section className='flex gap-10 py-1'>
-        <p >Location<span className='text-red-600 ml-1'>*</span></p>
-        <div className='w-full'>
-          <section className='flex items-center gap-5 py-2'>
-            <aside className='flex flex-col w-[50%]'>
-              <label className="pb-1">Country <span className='text-red-600 ml-1'>*</span></label>
-              <CountrySelect
-                labels={en}
-                onChange={handleCountryCodeChange}
+        <section className='flex flex-col py-1'>
+          <p className='py-1'>This vendor process is intended for managed hotels only. Please check this box to confirm you're at a managed hotel</p>
+          <div className='flex gap-8 py-1'>
+            <p>Is the Hotel</p>
+            <p className='flex items-center'>
+              <span>Managed</span>
+              <input
+                className='relative top-[2px] h-4 w-5 ml-5'
+                id='Managed'
+                name='Managed'
+                type='checkbox'
+                checked={HotelInfoData.isTheHotel === 'Managed' ? true : false}
+                onChange={() => handleCheckboxChange('Managed')}
               />
-            </aside>
-            <aside className='flex flex-col w-[50%]'>
-              <label className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
-              <input name='State' value={HotelInfoData.State || ""} onChange={handleHoteInfoData} placeholder="Enter State" className='border h-9 rounded-lg p-2' />
-            </aside>
-          </section>
-          <section className='flex items-center gap-5 py-2'>
-            <aside className='flex flex-col w-[50%]'>
-              <label className="pb-1">City <span className='text-red-600 ml-1'>*</span></label>
-              <input name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className='border h-9 rounded-lg p-2' />
-            </aside>
-            <aside className='flex flex-col w-[50%]'>
-              <label className="pb-1">Zip Code <span className='text-red-600 ml-1'>*</span></label>
-              <input name='ZipCode' value={HotelInfoData.ZipCode || ""} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className='border h-9 rounded-lg p-2' />
-            </aside>
-          </section>
-        </div>
-      </section>
+            </p>
+            <p className='flex items-center'>
+              Franchise
+              <input
+                className='relative top-[2px] h-4 w-5 ml-5'
+                id='Franchise'
+                name='Franchise'
+                type='checkbox'
+                checked={HotelInfoData.isTheHotel === 'Franchise' ? true : false}
+                onChange={() => handleCheckboxChange('Franchise')}
+              />
+            </p>
+          </div>
+        </section>
+
+        <section className='flex gap-10 py-1'>
+          <p >Location<span className='text-red-600 ml-1'>*</span></p>
+          <div className='w-full'>
+            <section className='flex items-center gap-5 py-2'>
+              <aside className='flex flex-col w-[50%]'>
+                <label className="pb-1">Country <span className='text-red-600 ml-1'>*</span></label>
+                <CountrySelect
+                  labels={en}
+                  onChange={handleCountryCodeChange}
+                />
+              </aside>
+              <aside className='flex flex-col w-[50%]'>
+                <label className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
+                <input name='State' value={HotelInfoData.State || ""} onChange={handleHoteInfoData} placeholder="Enter State" className='border h-9 rounded-lg p-2' />
+              </aside>
+            </section>
+            <section className='flex items-center gap-5 py-2'>
+              <aside className='flex flex-col w-[50%]'>
+                <label className="pb-1">City <span className='text-red-600 ml-1'>*</span></label>
+                <input name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className='border h-9 rounded-lg p-2' />
+              </aside>
+              <aside className='flex flex-col w-[50%]'>
+                <label className="pb-1">Zip Code <span className='text-red-600 ml-1'>*</span></label>
+                <input name='ZipCode' value={HotelInfoData.ZipCode || ""} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className='border h-9 rounded-lg p-2' />
+              </aside>
+            </section>
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default HotelInformation;

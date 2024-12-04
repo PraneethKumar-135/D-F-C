@@ -1,122 +1,279 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
-import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { updateSocialMediaAccounts } from '../../Redux/Slice/SocialMediaSlice';
+import { updatebuttonClick } from '../../Redux/Slice/PersonalInfoSlice';
 
 const SocialMediaInfo = () => {
     const dispatch = useDispatch();
-    const sliceData = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation);
-    const PageToogle = useSelector((state) => state.personalInformation.PageToogle)
+    const sliceData = useSelector((state) => state.socialMediaInfo.SocialMediaInformation);
+    const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
+    const initialAccountsState = {
+        Facebook: false,
+        Instagram: false,
+        Linkedin: false,
+        Pinterest: false,
+        TikTok: false,
+        "X (Twitter)": false,
+        YouTube: false,
+        Others: false,
+        'I Dont Know': false,
+    };
+    const [socialMediaAccount, setSocialMediaAccount] = useState(initialAccountsState);
 
-    const [SocialMediaData, SetSocialMediaData] = useState({
-        NameOfAgency: '',
-        PrimaryContactName: '',
-        PrimaryContactEmail: '',
-        PrimaryContactNumber: '',
-        HotelApplicable: false,
-    });
+    const [socialMediaData, setSocialMediaData] = useState({});
 
+    const handleSocialMediaAccount = (e) => {
+        const { name, checked } = e.target;
+        setSocialMediaAccount({ ...socialMediaAccount, [name]: checked });
 
-    const isFormComplete = (data) => {
+        if (checked) {
+            setSocialMediaData((prevData) => ({
+                ...prevData,
+                [name]: {
+                    agencyName: '',
+                    contactName: '',
+                    email: '',
+                    phone: '',
+                    url: '',
+                    pageID: '',
+                    isInFBM: false,
+                    dcubeAdded: null,
+                },
+            }));
+        } else {
+            setSocialMediaData((prevData) => {
+                const updatedData = { ...prevData };
+                delete updatedData[name];
+                return updatedData;
+            });
+        }
+    };
+
+    const isPlatformComplete = (data) => {
         return (
-            data.NameOfAgency &&
-            data.PrimaryContactName &&
-            data.PrimaryContactEmail &&
-            data.PrimaryContactNumber &&
-            data.HotelApplicable
+            data.agencyName &&
+            data.contactName &&
+            data.email &&
+            data.phone &&
+            data.url &&
+            data.pageID
         );
     };
 
-    const handleSocialMediaData = (e) => {
-        const { name, value, type, checked } = e.target;
-
+    const handleFieldChange = (platform, field, value) => {
         const updatedData = {
-            ...SocialMediaData,
-            [name]: type === 'checkbox' ? checked : value,
+            ...socialMediaData,
+            [platform]: {
+                ...socialMediaData[platform],
+                [field]: value,
+                // Enforce `dcubeAdded` logic based on `isInFBM`
+                ...(field === 'isInFBM' && value === true ? { dcubeAdded: true } : {}),
+            },
         };
 
-        SetSocialMediaData(updatedData);
+        const incompletePlatforms = Object.keys(updatedData).filter(
+            (platform) => !isPlatformComplete(updatedData[platform])
+        );
 
-        // Dispatch if form is complete
-        if (isFormComplete(updatedData)) {
-            dispatch(updateSocialMediaAgency(updatedData));
+        if (incompletePlatforms.length === 0) {
+            // dispatch(updatebuttonClick(false));
+            // } else {
+            dispatch(updateSocialMediaAccounts(updatedData));
+            dispatch(updatebuttonClick(true));
         }
+
+        setSocialMediaData(updatedData);
     };
 
-    // Update state when slice data changes
+
+
+
+    // console.log(socialMediaData);
     useEffect(() => {
-        if (PageToogle) {
-            dispatch(updatebuttonClick(true));
-        } else {
-            SetSocialMediaData(sliceData);
+        if (sliceData) {
+            setSocialMediaData(sliceData);
+            const updatedAccountsState = Object.keys(initialAccountsState).reduce((acc, key) => {
+                acc[key] = !!sliceData[key];
+                return acc;
+            }, {});
+            setSocialMediaAccount(updatedAccountsState);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [PageToogle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mainPageToogle]);
+
 
     return (
         <div className='flex flex-col gap-5'>
+
             <header className='border border-black rounded-lg p-3 text-xl bg-data-blue flex items-center justify-between px-5'>
                 <img width={100} src="https://assets.website-files.com/611cbbfb9a41092654f24228/616e52b7d8fc6451b604d39f_logo.png" alt='' />
-                <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Agency Information</h1>
+                <h1 className='font-medium text-2xl text-data-text text-center'>Social Media Information</h1>
                 <img width={100} className='' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Marriott_Logo.svg/1024px-Marriott_Logo.svg.png" alt='' />
             </header>
+
             <div className='border border-black rounded-lg px-5 py-3 '>
-                <p>Complete only if your hotel uses an outside agency to manage the hotel's social media accounts</p>
-                <section className='flex items-center gap-5 pt-7 pb-4'>
-                    <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Name of Agency <span className='text-red-600 ml-1'>*</span></label>
-                        <input
-                            onChange={handleSocialMediaData}
-                            value={SocialMediaData.NameOfAgency || ""}
-                            name="NameOfAgency"
-                            placeholder="Enter Name of the Agency"
-                            className='border h-9 rounded-lg p-2'
-                        />
-                    </aside>
-                    <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Primary Contact<span className='text-red-600 ml-1'>*</span></label>
-                        <input
-                            onChange={handleSocialMediaData}
-                            value={SocialMediaData.PrimaryContactName || ""}
-                            name="PrimaryContactName"
-                            placeholder="Enter Primary Contact Name"
-                            className='border h-9 rounded-lg p-2'
-                        />
-                    </aside>
-                </section>
-                <section className='flex items-center gap-5 pb-7'>
-                    <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Primary Contact Email Address </label>
-                        <input
-                            onChange={handleSocialMediaData}
-                            value={SocialMediaData.PrimaryContactEmail || ""}
-                            name="PrimaryContactEmail"
-                            placeholder="Enter Primary Contact Email Address"
-                            className='border h-9 rounded-lg p-2'
-                        />
-                    </aside>
-                    <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Primary Contact Phone Number</label>
-                        <input
-                            onChange={handleSocialMediaData}
-                            value={SocialMediaData.PrimaryContactNumber || ""}
-                            name="PrimaryContactNumber"
-                            placeholder="Enter Primary Contact Phone Number"
-                            className='border h-9 rounded-lg p-2'
-                        />
-                    </aside>
-                </section>
-                <p className='flex items-center gap-5'>
-                    <span>Not Applicable/Hotel does not use agency </span>
-                    <input
-                        onChange={handleSocialMediaData}
-                        checked={SocialMediaData.HotelApplicable || false}
-                        name="HotelApplicable"
-                        className='relative top-[2px] h-4 w-5'
-                        type='checkbox'
-                    />
-                </p>
+                <p>Please Check the social media account you have for the above-mentioned hotel:</p>
+                <div className='flex flex-col gap-2 mt-3'>
+                    {Object.keys(socialMediaAccount).map((platform) => (
+                        <span key={platform} className='flex items-center gap-3'>
+                            <input
+                                className='relative top-[2px] h-4 w-5'
+                                onChange={handleSocialMediaAccount}
+                                type='checkbox'
+                                id={platform}
+                                name={platform}
+                                checked={socialMediaAccount[platform]}
+                            />
+                            <label className='mt-1' htmlFor={platform}>{platform}</label>
+                        </span>
+                    ))}
+                </div>
             </div>
+
+            {Object.entries(socialMediaAccount).map(([platform, isChecked]) => (
+                isChecked && (
+                    <div key={platform} className='flex flex-col gap-5 mt-5'>
+                        {/* Section 1 */}
+                        <section>
+                            <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
+                                <h1 className='text-sm font-normal'>
+                                    Section 1: Please provide contact information for the person managing the {platform} account.
+                                </h1>
+                            </div>
+                            <div className='flex gap-10 mt-5 ml-10'>
+                                <section className='font-semibold'>{platform}</section>
+                                <section className='px-10 py-3 w-full'>
+                                    <div className='flex items-center gap-5 py-2'>
+                                        <div className='flex flex-col w-[50%]'>
+                                            <label className="pb-1">Hotel / Social Media Agency Name</label>
+                                            <input
+                                                placeholder="Enter Agency Name"
+                                                className='border h-9 rounded-lg p-2'
+                                                value={socialMediaData[platform]?.agencyName || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'agencyName', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className='flex flex-col w-[50%]'>
+                                            <label className="pb-1">Contact Person Name</label>
+                                            <input
+                                                placeholder="Enter Contact Person Name"
+                                                className='border h-9 rounded-lg p-2'
+                                                value={socialMediaData[platform]?.contactName || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'contactName', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className='flex items-center gap-5 py-2'>
+                                        <div className='flex flex-col w-[50%]'>
+                                            <label className="pb-1">Email Address</label>
+                                            <input
+                                                placeholder="Email Address"
+                                                className='border h-9 rounded-lg p-2'
+                                                value={socialMediaData[platform]?.email || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'email', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className='flex flex-col w-[50%]'>
+                                            <label className="pb-1">Phone Number</label>
+                                            <input
+                                                placeholder="Enter Phone Number"
+                                                className='border h-9 rounded-lg p-2'
+                                                value={socialMediaData[platform]?.phone || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'phone', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </section>
+
+                        {/* Section 2 */}
+                        <section>
+                            <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
+                                <h1 className='text-sm font-normal'>Section 2 : Please input the below Information for {platform} Social Media application that your hotel is using.</h1>
+                            </div>
+                            <div className='flex gap-10 mt-5 ml-10'>
+                                <section className='font-semibold'>{platform}</section>
+                                <section className='px-10 py-3 w-full'>
+                                    <div className='flex items-center gap-5 py-2'>
+                                        <div className='flex flex-col w-[50%]'>
+                                            <label className="pb-1">{platform} URL</label>
+                                            <input
+                                                placeholder={`${platform} URL`}
+                                                className='border h-9 rounded-lg p-2'
+                                                value={socialMediaData[platform]?.url || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'url', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className='flex flex-col w-[50%]'>
+                                            <label className="pb-1">{platform} Page ID</label>
+                                            <input
+                                                placeholder={`${platform} Page ID`}
+                                                className='border h-9 rounded-lg p-2'
+                                                value={socialMediaData[platform]?.pageID || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'pageID', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <span className='flex gap-5 py-2'>
+                                        <p>Is your {platform} page in Marriott’s Business Manager (MI {platform.slice(0, 1)}BM)?</p>
+                                        <span className='flex items-center gap-3'>
+                                            <label>Yes</label>
+                                            <input
+                                                type='checkbox'
+                                                checked={socialMediaData[platform]?.isInFBM === true} // Checked only if explicitly true
+                                                onChange={(e) => handleFieldChange(platform, 'isInFBM', e.target.checked)}
+                                            />
+                                        </span>
+                                        <span className='flex items-center gap-3'>
+                                            <label>No</label>
+                                            <input
+                                                type='checkbox'
+                                                checked={!socialMediaData[platform]?.isInFBM} // Checked only if explicitly false
+                                                onChange={(e) => handleFieldChange(platform, 'isInFBM', !e.target.checked)}
+                                            />
+                                        </span>
+                                    </span>
+
+                                </section>
+                            </div>
+                        </section>
+
+                        {/* Section 3 */}
+                        {!socialMediaData[platform]?.isInFBM && (
+                            <section>
+                                <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
+                                    <h1 className='text-sm font-normal'>Section 3:  If your {platform} page is not enrolled in Marriott’s Facebook Business Manager (MI {platform.slice(0, 1)}BM), update below</h1>
+                                </div>
+                                <section className='flex flex-col items-center justify-center py-3'>
+                                    <p>Did you successfully add DCube to your {platform} account?</p>
+                                    <p>Click on the FAQ at top right for instructions on how to add admin access.</p>
+                                    <div className='flex gap-5 p-5'>
+                                        <span className='flex items-center gap-3'>
+                                            <input
+                                                type='radio'
+                                                checked={socialMediaData[platform]?.dcubeAdded === true}
+                                                onChange={() => handleFieldChange(platform, 'dcubeAdded', true)}
+                                            />
+                                            <label>Yes</label>
+                                        </span>
+                                        <span className='flex items-center gap-3'>
+                                            <input
+                                                type='radio'
+                                                checked={socialMediaData[platform]?.dcubeAdded === false}
+                                                onChange={() => handleFieldChange(platform, 'dcubeAdded', false)}
+                                            />
+                                            <label>No</label>
+                                        </span>
+                                    </div>
+                                </section>
+                            </section>
+                        )}
+                    </div>
+                )
+            ))}
         </div>
     );
 };

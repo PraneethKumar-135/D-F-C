@@ -29,10 +29,10 @@ CountrySelect.propTypes = {
   labels: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 
-const PersonalInformation = () => {
+const PersonalInformation = ({ Border }) => {
   const dispatch = useDispatch();
   const sliceData = useSelector((state) => state.personalInformation.PersonalInfoData)
-  // const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
+  const PersonalInfoError = useSelector((state) => state.personalInformation.PersonalInfoError)
   const [Personaldata, setPersonalData] = useState({
     FirstName: "",
     LastName: "",
@@ -43,43 +43,34 @@ const PersonalInformation = () => {
     PhoneNumber: "",
   });
 
-  const isFormComplete = (data) => {
-    return (
-      data.FirstName &&
-      data.LastName &&
-      data.Title &&
-      data.Email &&
-      data.Eid &&
-      data.CountryCode &&
-      data.PhoneNumber
-    )
-  }
+  const handleCountryCodeChange = (callingCode) => {
+    const updatedData = {
+      ...Personaldata,
+      CountryCode: `+${callingCode}`
+    }
+    setPersonalData(updatedData);  
+    dispatch(updatePersonalInformation(updatedData));
+  };
+
 
   const handlePersonalData = (e) => {
     const { name, value } = e.target;
     const updatedData = {
       ...Personaldata,
-      [name]: value, // This ensures the correct field is updated in the state
+      [name]: value,
     };
-
+    console.log("Updated", updatedData);
     setPersonalData(updatedData);
-
-    if (isFormComplete(updatedData)) {
-      dispatch(updatePersonalInformation(updatedData)); // Use updatedData instead of Personaldata
-    }
+    dispatch(updatePersonalInformation(updatedData));
   };
 
 
-  const handleCountryCodeChange = (callingCode) => {
-    setPersonalData((prevData) => ({
-      ...prevData,
-      CountryCode: `+${callingCode}`,
-    }));
-  };
 
-  useEffect(() => {
-    setPersonalData(sliceData)
-  }, [dispatch, sliceData])
+  // console.log("PersonalInfoError", PersonalInfoError);
+
+
+  useEffect(() => { setPersonalData(sliceData) }, [dispatch, sliceData,]);
+
 
   return (
     <div className='flex flex-col gap-4 pb-5'>
@@ -102,15 +93,14 @@ const PersonalInformation = () => {
       <div className='border border-black rounded-lg px-10 py-3'>
         <section className='flex items-center gap-5 py-2'>
           <aside className='flex flex-col w-[50%]'>
-            <label className="pb-1">First Name <span className='text-red-600 ml-1'>*</span></label>
+            <label className="pb-1">First Name <span className="text-red-600 ml-1">*</span></label>
             <input
               name="FirstName"
               value={Personaldata.FirstName || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your First Name"
-              className='border h-9 rounded-lg p-2'
+              className={` h-9 rounded-lg p-2 ${PersonalInfoError.FirstName ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
-            {/* {errorInputs && <span className='text-red-500 pl-1'>Enter First Name</span>} */}
           </aside>
           <aside className='flex flex-col w-[50%]'>
             <label className="pb-1">Last Name <span className='text-red-600 ml-1'>*</span></label>
@@ -119,7 +109,7 @@ const PersonalInformation = () => {
               value={Personaldata.LastName || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Last Name"
-              className='border h-9 rounded-lg p-2'
+              className={` h-9 rounded-lg p-2 ${PersonalInfoError.LastName ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
           </aside>
         </section>
@@ -132,7 +122,7 @@ const PersonalInformation = () => {
               value={Personaldata.Title || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Title"
-              className='border h-9 rounded-lg p-2'
+              className={` h-9 rounded-lg p-2 ${PersonalInfoError.Title ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
           </aside>
           <aside className='flex flex-col w-[50%]'>
@@ -142,7 +132,7 @@ const PersonalInformation = () => {
               value={Personaldata.Email || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Email"
-              className='border h-9 rounded-lg p-2'
+              className={` h-9 rounded-lg p-2 ${PersonalInfoError.Email ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
           </aside>
         </section>
@@ -154,7 +144,7 @@ const PersonalInformation = () => {
             value={Personaldata.Eid || ""}
             onChange={handlePersonalData}
             placeholder="Enter Employee ID"
-            className='border h-9 rounded-lg p-2'
+            className={` h-9 rounded-lg p-2 ${PersonalInfoError.Eid ? "border-2 border-red-500" : "border border-gray-300"}`}
           />
         </section>
 
@@ -170,10 +160,11 @@ const PersonalInformation = () => {
             <label className="pb-1">Phone <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="PhoneNumber"
+              type='number'
               value={Personaldata.PhoneNumber || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Phone Number"
-              className='border h-9 rounded-lg p-2'
+              className={` h-9 rounded-lg p-2 ${PersonalInfoError.PhoneNumber ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
           </aside>
         </section>

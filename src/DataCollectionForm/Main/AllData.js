@@ -7,6 +7,8 @@ const AllData = () => {
     const PersonalInfo = useSelector((state) => state.personalInformation.PersonalInfoData);
     const HotelInfo = useSelector((state) => state.hotelInformation.HotelData);
     const SocialMediaAgencyInfo = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation);
+    const SocialMediaData = useSelector((state) => state.socialMediaInfo.SocialMediaInformation);
+
     const [section, setsection] = useState('Personal')
     console.log(SocialMediaAgencyInfo);
 
@@ -14,6 +16,42 @@ const AllData = () => {
         dispatch(editMainPage(true));
         dispatch(updatedCurrentPage(1))
     }
+
+    const HandleApiData = () => {
+        const AllData = {
+            "first_name": PersonalInfo.FirstName,
+            "last_name": PersonalInfo.LastName,
+            "title": PersonalInfo.Title,
+            "personal_email": PersonalInfo.Email,
+            "eid": PersonalInfo.Eid,
+            "country_code": PersonalInfo.CountryCode,
+            "ph_no": PersonalInfo.PhoneNumber,
+            "hotel_name": HotelInfo.HotelName,
+            "marsha_code": HotelInfo.MarshaCode,
+            "managed_franchise": HotelInfo.isTheHotel,
+            "country": HotelInfo.Country,
+            "state": HotelInfo.State,
+            "city": HotelInfo.City,
+            "zip_code": HotelInfo.ZipCode,
+            "agency_name": SocialMediaAgencyInfo.NameOfAgency,
+            "primary_contact": SocialMediaAgencyInfo.PrimaryContactName,
+            "primary_email": SocialMediaAgencyInfo.PrimaryContactEmail,
+            "primary_phone": SocialMediaAgencyInfo.PrimaryContactNumber,
+            "not_applicable": SocialMediaAgencyInfo.HotelApplicable,
+            "sma_name": SocialMediaData.Facebook.agencyName,
+            "sma_person": SocialMediaData.Facebook.contactName,
+            "sma_email": SocialMediaData.Facebook.email,
+            "sma_phone": SocialMediaData.Facebook.phone,
+            "pageURL": SocialMediaData.Facebook.url,
+            "pageID": SocialMediaData.Facebook.pageID,
+            "mi_fbm": SocialMediaData.Facebook.isInFBM,
+            "added_dcube": SocialMediaData.Facebook.dcubeAdded,
+            "platform_input": Object.keys(SocialMediaData)[0]
+        }
+        console.log(AllData);
+    }
+    console.log(SocialMediaData);
+
     return (
         <div className="flex flex-col gap-5 relative">
             <header className='border border-data-text py-1 rounded-lg bg-data-blue '>
@@ -118,8 +156,13 @@ const AllData = () => {
                             <button className='py-2 px-5 rounded-md border hover:text-white hover:border-data-text bg-data-blue font-medium text-data-text my-10' onClick={handlEditFunction}>Edit</button>
                         </section>
                     </section>}
-                        
+
                 </aside>
+            </section>
+
+            <section>
+                <button type='submit' onClick={HandleApiData}>Submit</button>
+                {/* <p>{SocialMediaData.Facebook.agencyName}</p> */}
             </section>
         </div>
     )

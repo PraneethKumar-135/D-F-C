@@ -8,7 +8,7 @@ import { updateHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
 import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
-const CountrySelect = ({ onChange, labels, ...rest }) => (
+const CountrySelect = ({ values, onChange, labels, ...rest }) => (
   <select
     {...rest}
     className='border h-9 rounded-lg'
@@ -45,18 +45,8 @@ const HotelInformation = () => {
     ZipCode: ""
   });
 
-  const isFormComplete = (data) => {
-    return (
-      data.HotelName &&
-      data.MarshaCode &&
-      data.isTheHotel &&
-      data.Country &&
-      data.State &&
-      data.City &&
-      data.ZipCode
-    )
-  }
-  
+
+
   const handleHoteInfoData = (e) => {
     const { name, value } = e.target;
 
@@ -64,39 +54,37 @@ const HotelInformation = () => {
       ...HotelInfoData,
       [name]: value, // This ensures the correct field is updated in the state
     };
-
     SetHotelInfoData(updatedData);
-
-    if (isFormComplete(updatedData)) {
-      dispatch(updateHotelInformation(updatedData))
-    }
+    dispatch(updateHotelInformation(updatedData))
   }
 
 
   const handleCountryCodeChange = (countryName) => {
-    SetHotelInfoData((prevData) => ({
-      ...prevData,
+    const updatedData = {
+      ...HotelInfoData,
       Country: countryName,
-    }));
+    }
+    SetHotelInfoData(updatedData);
+    dispatch(updateHotelInformation(updatedData))
   };
 
   const handleCheckboxChange = (data) => {
-    SetHotelInfoData((prevData) => ({
-      ...prevData,
-      isTheHotel: data
-    }));
+    const updatedData = {
+      ...HotelInfoData,
+      isTheHotel: data.isTheHotel === data ? '' : data,
+    }
+    SetHotelInfoData(updatedData);
+    dispatch(updateHotelInformation(updatedData))
   }
 
-  useEffect(() => {
-    if (PageToogle) {
-      console.log("Loading page details...");  
-      dispatch(updatebuttonClick(true));
-    } else {
-      SetHotelInfoData(sliceData);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [PageToogle]);
 
+  useEffect(() => {
+    SetHotelInfoData(sliceData);
+    dispatch(updateHotelInformation(sliceData))
+
+  }, [dispatch, sliceData]);
+
+  // console.log("HotelInfoData", sliceData);
 
 
   return (
@@ -110,7 +98,12 @@ const HotelInformation = () => {
       <div className='border border-black rounded-lg px-10 py-2'>
         <aside className='flex flex-col py-1'>
           <label className="pb-1">Name of the Hotel<span className='text-red-600 ml-1'>*</span></label>
-          <input name='HotelName' value={HotelInfoData.HotelName || ""} onChange={handleHoteInfoData} placeholder="Enter Hotel Name" className='border h-9 rounded-lg p-2' />
+          <input
+            onChange={handleHoteInfoData}
+            value={HotelInfoData.HotelName || ""}
+            name='HotelName'
+            placeholder="Enter Hotel Name"
+            className='border h-9 rounded-lg p-2' />
         </aside>
         <aside className='flex flex-col py-1'>
           <label className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
@@ -128,7 +121,7 @@ const HotelInformation = () => {
                 id='Managed'
                 name='Managed'
                 type='checkbox'
-                checked={HotelInfoData.isTheHotel === 'Managed' ? true : false}
+                checked={HotelInfoData.isTheHotel === 'Managed'}
                 onChange={() => handleCheckboxChange('Managed')}
               />
             </p>
@@ -139,7 +132,7 @@ const HotelInformation = () => {
                 id='Franchise'
                 name='Franchise'
                 type='checkbox'
-                checked={HotelInfoData.isTheHotel === 'Franchise' ? true : false}
+                checked={HotelInfoData.isTheHotel === 'Franchise'}
                 onChange={() => handleCheckboxChange('Franchise')}
               />
             </p>
@@ -155,6 +148,7 @@ const HotelInformation = () => {
                 <CountrySelect
                   labels={en}
                   onChange={handleCountryCodeChange}
+                // value={HotelInfoData.Country}
                 />
               </aside>
               <aside className='flex flex-col w-[50%]'>

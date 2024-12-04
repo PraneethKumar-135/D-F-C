@@ -7,8 +7,21 @@ const HotelInfoSlice = createSlice({
     },
     reducers: {
         updateHotelInformation: (state, action) => {
-            console.log(action.payload);
-            state.HotelData = action.payload
+            console.log("Slice Data", action.payload);
+            // const isFormComplete = (data) => {
+            //     return (
+            //         data.HotelName &&
+            //         data.MarshaCode &&
+            //         data.isTheHotel &&
+            //         data.Country &&
+            //         data.State &&
+            //         data.City &&
+            //         data.ZipCode
+            //     )
+            // }
+            // if (isFormComplete(action.payload)) {
+                state.HotelData = action.payload;
+            // }
         },
     },
 })

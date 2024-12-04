@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PersonalInformation from '../Components/personalInformation';
 import HotelInformation from '../Components/hotelInformation';
+import SocialMediaAgency from '../Components/SocialMediaAgency';
 import SocialMediaInfo from '../Components/SocialMediaInfo';
-import SocialMediaInfo2 from '../Components/SocialMediaInfo2';
 import AllData from './AllData';
 import { useDispatch, useSelector } from 'react-redux';
 import { editMainPage, updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
@@ -12,7 +12,7 @@ function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
     const PageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
     const Buttonclick = useSelector((state) => state.personalInformation.buttonClick)
-    const [currentPage, setCurrentPage] = useState(PageUpdate);
+    const [currentPage, setCurrentPage] = useState(3);
     const [buttonclicked, setButtonclick] = useState(Buttonclick);
     const [Loading, setLoading] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
@@ -27,7 +27,7 @@ function MainPage() {
     );
 
     const handleNextPage = () => {
-        setTransitioning(true); 
+        setTransitioning(true);
         if (Buttonclick) {
             setButtonclick(false)
             setTimeout(() => {
@@ -42,7 +42,7 @@ function MainPage() {
             // dispatch(updatebuttonClick(false))
         }
     };
-    
+
     const handlePreviousPage = () => {
         setTransitioning(true);
         setTimeout(() => {
@@ -50,6 +50,7 @@ function MainPage() {
             setTransitioning(false);
         }, 300);
         dispatch(updatebuttonClick(true))
+        dispatch(updatedCurrentPage(currentPage))
     };
 
     const handleAlldataPage = () => {
@@ -65,20 +66,21 @@ function MainPage() {
     }
 
     const pageComponents = {
-        1: <PersonalInformation />,
+        1: <PersonalInformation  />,
         2: <HotelInformation />,
-        3: <SocialMediaInfo />,
-        4: <SocialMediaInfo2 />
+        3: <SocialMediaAgency />,
+        4: <SocialMediaInfo />
     };
 
     useEffect(() => {
-        setCurrentPage(PageUpdate);
+        setCurrentPage(3);
         setAllData(false);
         setTimeout(() => {
             setLoading(false)
         }, 1000)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [PageToogle])
+
 
     console.log("CurrentPage: " + currentPage);
     // console.log("Button: " + buttonclicked);
@@ -112,7 +114,7 @@ function MainPage() {
                                         </div>
                                         <button
                                             className="bg-blue-500 text-white px-4 py-2 rounded-sm hover:bg-blue-600"
-                                            onClick={() => setButtonclick(false)}
+                                            onClick={() => { setButtonclick(false);  }}
                                         >
                                             Ok
                                         </button>

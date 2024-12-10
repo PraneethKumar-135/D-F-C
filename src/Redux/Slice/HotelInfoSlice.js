@@ -3,29 +3,49 @@ import { createSlice } from "@reduxjs/toolkit";
 const HotelInfoSlice = createSlice({
     name: "hotelInformation",
     initialState: {
-        HotelData: {}
+        HotelData: {},
+        PersonalInfoError: {
+            HotelName: false,
+            MarshaCode: false,
+            isTheHotel: false,
+            Country: false,
+            State: false,
+            City: false,
+            ZipCode: false
+        },
+        HotelPageToggle: false,
+        HasErrors: false
     },
     reducers: {
         updateHotelInformation: (state, action) => {
-            console.log("Slice Data", action.payload);
-            // const isFormComplete = (data) => {
-            //     return (
-            //         data.HotelName &&
-            //         data.MarshaCode &&
-            //         data.isTheHotel &&
-            //         data.Country &&
-            //         data.State &&
-            //         data.City &&
-            //         data.ZipCode
-            //     )
-            // }
-            // if (isFormComplete(action.payload)) {
-                state.HotelData = action.payload;
-            // }
-        },
-    },
-})
+            const PayloadData = action.payload;
 
-export const { updateHotelInformation } = HotelInfoSlice.actions;
+            Object.keys(state.PersonalInfoError).forEach((field) => {
+                state.PersonalInfoError[field] = !PayloadData[field];
+            });
+
+            const hasErrors = Object.values(state.PersonalInfoError).some((error) => error === true);
+
+            if (hasErrors) {
+                state.HasErrors = true;
+                state.HotelData = {
+                    HasErrors: true,
+                };
+            } else {
+                state.HasErrors = false;
+                state.HotelData = {
+                    ...PayloadData,
+                    HasErrors: false,
+                };
+            }
+        },
+        updateHotelPageToggle: (state, action) => {
+            state.HotelPageToggle = action.payload;
+        }
+    }
+});
+
+
+export const { updateHotelInformation, updateHotelPageToggle } = HotelInfoSlice.actions;
 
 export default HotelInfoSlice.reducer;

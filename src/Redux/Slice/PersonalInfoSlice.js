@@ -56,20 +56,21 @@ export const PersonalInfoSlice = createSlice({
 
     },
     extraReducers: (builder) => {
+
         builder.addCase(updateHotelInformation, (state, action) => {
-            // console.log("ExtraReducer", action.payload);
-            if (Object.keys(action.payload).length > 0) {
-                state.currentPage = 3;
-                state.buttonClick = true;
+            const hotelData = action.payload;
+            if (!hotelData.HasErrors) {
+                state.buttonClick = hotelData.ButtonClick;
+                state.currentPage = hotelData.CurrentPage;
             }
         });
 
         builder.addCase(updateSocialMediaAgency, (state, action) => {
-            console.log("ExtraReducer", action.payload);
-            const PayloadData = action.payload;
-            if (!PayloadData.HasErrors) {
-                state.currentPage = 4;
-                state.buttonClick = true;
+            // console.log("ExtraReducer", action.payload);
+            const SocialMediaAgency = action.payload;
+            if (!SocialMediaAgency.HasErrors) {
+                state.buttonClick = SocialMediaAgency.ButtonClick;
+                state.currentPage = SocialMediaAgency.CurrentPage;
             }
         });
     },

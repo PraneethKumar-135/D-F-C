@@ -6,13 +6,15 @@ import SocialMediaInfo from '../Components/SocialMediaInfo';
 import AllData from './AllData';
 import { useDispatch, useSelector } from 'react-redux';
 import { editMainPage, updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { updateHotelPageToggle } from '../../Redux/Slice/HotelInfoSlice';
+import { updateSocialMediaAgencyToggle } from '../../Redux/Slice/SocialMediaAgencySlice';
 
 
 function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
     const PageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
     const Buttonclick = useSelector((state) => state.personalInformation.buttonClick)
-    const [currentPage, setCurrentPage] = useState(3);
+    const [currentPage, setCurrentPage] = useState(PageUpdate);
     const [buttonclicked, setButtonclick] = useState(Buttonclick);
     const [Loading, setLoading] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
@@ -33,6 +35,8 @@ function MainPage() {
             setTimeout(() => {
                 setCurrentPage(PageUpdate);
                 setTransitioning(false);
+                // dispatch(updateHotelPageToggle(true))
+                // dispatch(updateSocialMediaAgencyToggle(true));
             }, 300);
             dispatch(updatebuttonClick(false));
         } else {
@@ -51,6 +55,7 @@ function MainPage() {
         }, 300);
         dispatch(updatebuttonClick(true))
         dispatch(updatedCurrentPage(currentPage))
+
     };
 
     const handleAlldataPage = () => {
@@ -66,14 +71,14 @@ function MainPage() {
     }
 
     const pageComponents = {
-        1: <PersonalInformation  />,
+        1: <PersonalInformation />,
         2: <HotelInformation />,
         3: <SocialMediaAgency />,
         4: <SocialMediaInfo />
     };
 
     useEffect(() => {
-        setCurrentPage(3);
+        setCurrentPage(PageUpdate);
         setAllData(false);
         setTimeout(() => {
             setLoading(false)
@@ -114,7 +119,7 @@ function MainPage() {
                                         </div>
                                         <button
                                             className="bg-blue-500 text-white px-4 py-2 rounded-sm hover:bg-blue-600"
-                                            onClick={() => { setButtonclick(false);  }}
+                                            onClick={() => { setButtonclick(false); }}
                                         >
                                             Ok
                                         </button>

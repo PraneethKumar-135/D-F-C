@@ -43,14 +43,7 @@ const PersonalInformation = ({ Border }) => {
     PhoneNumber: "",
   });
 
-  const handleCountryCodeChange = (callingCode) => {
-    const updatedData = {
-      ...Personaldata,
-      CountryCode: `+${callingCode}`
-    }
-    setPersonalData(updatedData);  
-    dispatch(updatePersonalInformation(updatedData));
-  };
+
 
 
   const handlePersonalData = (e) => {
@@ -59,14 +52,22 @@ const PersonalInformation = ({ Border }) => {
       ...Personaldata,
       [name]: value,
     };
-    console.log("Updated", updatedData);
+    // console.log("Updated", updatedData);
+    setPersonalData(updatedData);
+    dispatch(updatePersonalInformation(updatedData));
+  };
+
+  const handleCountryCodeChange = (callingCode) => {
+    const updatedData = {
+      ...Personaldata,
+      CountryCode: `+${callingCode}`
+    }
     setPersonalData(updatedData);
     dispatch(updatePersonalInformation(updatedData));
   };
 
 
-
-  // console.log("PersonalInfoError", PersonalInfoError);
+  // console.log("PersonalInfo", sliceData);
 
 
   useEffect(() => { setPersonalData(sliceData) }, [dispatch, sliceData,]);
@@ -129,6 +130,7 @@ const PersonalInformation = ({ Border }) => {
             <label className="pb-1">Email <span className='text-red-600 ml-1'>*</span></label>
             <input
               name="Email"
+              type='email'
               value={Personaldata.Email || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Email"

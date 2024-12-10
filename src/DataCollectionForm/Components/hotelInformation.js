@@ -4,7 +4,7 @@ import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
 import countries from 'i18n-iso-countries';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
+import { updateHotelInformation, updateHotelPageToggle } from '../../Redux/Slice/HotelInfoSlice';
 import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -34,6 +34,8 @@ CountrySelect.propTypes = {
 const HotelInformation = () => {
   const dispatch = useDispatch();
   const sliceData = useSelector((state) => state.hotelInformation.HotelData);
+  const PersonalInfoError = useSelector((state) => state.hotelInformation.PersonalInfoError);
+  const HotelPageToggle = useSelector((state) => state.hotelInformation.HotelPageToggle);
   const PageToogle = useSelector((state) => state.personalInformation.PageToogle);
   const [HotelInfoData, SetHotelInfoData] = useState({
     HotelName: '',
@@ -68,23 +70,36 @@ const HotelInformation = () => {
     dispatch(updateHotelInformation(updatedData))
   };
 
-  const handleCheckboxChange = (data) => {
-    const updatedData = {
-      ...HotelInfoData,
-      isTheHotel: data.isTheHotel === data ? '' : data,
-    }
+  const handleCheckboxChange = (type) => {
+    const updatedData = { ...HotelInfoData, isTheHotel: type === HotelInfoData.isTheHotel ? '' : type };
     SetHotelInfoData(updatedData);
-    dispatch(updateHotelInformation(updatedData))
-  }
+  };
+
+  const hasErrors = Object.values(PersonalInfoError).some((error) => error === true);
+  const ValueData = Object.values(HotelInfoData).some((value) => value !== "");
 
 
   useEffect(() => {
+
+    if (ValueData && hasErrors) {
+      dispatch(updateHotelInformation({ ...HotelInfoData, ButtonClick: false, CurrentPage: 2 }));
+    } else if (ValueData) {
+      dispatch(updateHotelInformation({ ...HotelInfoData, ButtonClick: true, CurrentPage: 3 }));
+    }
+  }, [HotelInfoData, ValueData, dispatch, hasErrors]);
+
+
+  useEffect(() => {
+    // if (!sliceData.hasErrors) {
+    console.log("SliceData");
     SetHotelInfoData(sliceData);
-    dispatch(updateHotelInformation(sliceData))
+    // }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!sliceData.hasErrors]);
 
-  }, [dispatch, sliceData]);
 
-  // console.log("HotelInfoData", sliceData);
+  console.log("HotelInfoData", sliceData);
+  // console.log("PersonalInfoError", hasErrors);
 
 
   return (
@@ -103,11 +118,11 @@ const HotelInformation = () => {
             value={HotelInfoData.HotelName || ""}
             name='HotelName'
             placeholder="Enter Hotel Name"
-            className='border h-9 rounded-lg p-2' />
+            className={` h-9 rounded-lg p-2 ${PersonalInfoError.HotelName ? "border-2 border-red-500" : "border border-gray-300"}`} />
         </aside>
         <aside className='flex flex-col py-1'>
           <label className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
-          <input name='MarshaCode' value={HotelInfoData.MarshaCode || ""} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className='border h-9 rounded-lg p-2' />
+          <input name='MarshaCode' value={HotelInfoData.MarshaCode || ""} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className={` h-9 rounded-lg p-2 ${PersonalInfoError.MarshaCode ? "border-2 border-red-500" : "border border-gray-300"}`} />
         </aside>
 
         <section className='flex flex-col py-1'>
@@ -148,22 +163,21 @@ const HotelInformation = () => {
                 <CountrySelect
                   labels={en}
                   onChange={handleCountryCodeChange}
-                // value={HotelInfoData.Country}
                 />
               </aside>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
-                <input name='State' value={HotelInfoData.State || ""} onChange={handleHoteInfoData} placeholder="Enter State" className='border h-9 rounded-lg p-2' />
+                <input name='State' value={HotelInfoData.State || ""} onChange={handleHoteInfoData} placeholder="Enter State" className={` h-9 rounded-lg p-2 ${PersonalInfoError.State ? "border-2 border-red-500" : "border border-gray-300"}`} />
               </aside>
             </section>
             <section className='flex items-center gap-5 py-2'>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">City <span className='text-red-600 ml-1'>*</span></label>
-                <input name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className='border h-9 rounded-lg p-2' />
+                <input name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className={` h-9 rounded-lg p-2 ${PersonalInfoError.City ? "border-2 border-red-500" : "border border-gray-300"}`} />
               </aside>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">Zip Code <span className='text-red-600 ml-1'>*</span></label>
-                <input name='ZipCode' value={HotelInfoData.ZipCode || ""} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className='border h-9 rounded-lg p-2' />
+                <input name='ZipCode' value={HotelInfoData.ZipCode || ""} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className={` h-9 rounded-lg p-2 ${PersonalInfoError.ZipCode ? "border-2 border-red-500" : "border border-gray-300"}`} />
               </aside>
             </section>
           </div>

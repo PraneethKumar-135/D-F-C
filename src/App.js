@@ -4,18 +4,20 @@ import MainPage from './DataCollectionForm/Main/MainPage'
 import { Provider } from 'react-redux'
 import store from './Redux/Store/Store'
 import AllData from './DataCollectionForm/Main/AllData'
+import SocialMediaInfo from './DataCollectionForm/Components/SocialMediaInfo'
+import SocialMediaAgency from './DataCollectionForm/Components/SocialMediaAgency'
 
 const App = () => {
  
   return (
     <div>
       <Provider store={store}>
-        <MainPage />
+        {/* <MainPage /> */}
         {/* < PersonalInformation/> */}
         {/* < HotelInformation/> */}
-        {/* < SocialMediaInfo/> */}
-        {/* <SocialMediaInfo2/> */}
-        {/* <AllData/> */}
+        {/* < SocialMediaAgency/> */}
+        {/* <SocialMediaInfo/> */}
+        <AllData/>
       </Provider>
     </div>
   )

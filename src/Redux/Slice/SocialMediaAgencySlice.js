@@ -6,11 +6,12 @@ export const SocialMediaAgencySlice = createSlice({
     initialState: {
         AgencyInformation: {},
         SocialMediaAgencySliceError: {},
+        SocialMedaiToggle: false
     },
     reducers: {
         updateSocialMediaAgency: (state, action) => {
             const PayloadData = action.payload;
-            // console.log("PayloadData", PayloadData);
+            console.log("PayloadData", PayloadData);
 
 
             Object.keys(PayloadData).forEach((field) => {
@@ -27,21 +28,20 @@ export const SocialMediaAgencySlice = createSlice({
 
 
             if (hasErrors) {
-                // console.log("Errors present.");
+                console.log("Errors present.");
+                state.AgencyInformation = { HasErrors: hasErrors };
             } else {
                 // console.log("Payload updated successfully.");
-                if (PayloadData.HotelApplicable === true) {
-                    console.log(PayloadData.HotelApplicable);
-                    state.AgencyInformation = { HotelApplicable: PayloadData.HotelApplicable, HasErrors: hasErrors }
-                }
-                else {
-                    state.AgencyInformation = { ...PayloadData, HasErrors: hasErrors };
-                }
+                state.AgencyInformation = { ...PayloadData, HasErrors: hasErrors };
             }
+        },
+        updateSocialMediaAgencyToggle: (state, action) => {
+            state.SocialMedaiToggle = action.payload;
         }
+
     }
 });
 
-export const { updateSocialMediaAgency } = SocialMediaAgencySlice.actions;
+export const { updateSocialMediaAgency, updateSocialMediaAgencyToggle } = SocialMediaAgencySlice.actions;
 
 export default SocialMediaAgencySlice.reducer;

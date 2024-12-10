@@ -1,54 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
+import { updateSocialMediaAgency, updateSocialMediaAgencyToggle } from '../../Redux/Slice/SocialMediaAgencySlice';
 import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 
 const SocialMediaAgency = () => {
     const dispatch = useDispatch();
     const sliceData = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation);
     const SocialMediaAgencySliceError = useSelector((state) => state.SocialMediaAgencyInfo.SocialMediaAgencySliceError);
-    const PageToogle = useSelector((state) => state.personalInformation.PageToogle)
+    const SocialMedaiToggle = useSelector((state) => state.SocialMediaAgencyInfo.SocialMedaiToggle);
 
     const [SocialMediaData, SetSocialMediaData] = useState({
         NameOfAgency: '',
         PrimaryContactName: '',
         PrimaryContactEmail: '',
         PrimaryContactNumber: '',
-        HotelApplicable: false,
+        // HotelApplicable: "",
     });
 
     const handleCheckboxChange = (e) => {
         const { checked, type } = e.target;
         if (type === "checkbox") {
             const updatedData = {
-                ...SocialMediaData,
-                HotelApplicable: checked,
+                HotelApplicable: checked ? "True" : "False",
             }
             SetSocialMediaData(updatedData);
-            // dispatch(updateSocialMediaAgency(updatedData));
         }
-    };
 
+    };
+    // 
 
     const handleSocialMediaData = (e) => {
         const { name, value, checked, type } = e.target;
 
         const updatedData = {
             ...SocialMediaData,
-            [name]: type === 'checkbox' ? checked : value,
+            [name]: value,
+            HotelApplicable: null
         };
         console.log("UpdatedData", updatedData);
         SetSocialMediaData(updatedData);
-        dispatch(updateSocialMediaAgency(updatedData));
+        // dispatch(updateSocialMediaAgency(updatedData));
     };
-    // console.log("SocialMediaData", SocialMediaData);
-    // console.log("sliceData", sliceData);
+    console.log("SocialMediaData", SocialMediaData);
+    console.log("sliceData", sliceData);
+    console.log("SocialMediaAgencySliceError", SocialMediaAgencySliceError);
+
+
+    const hasErrors = Object.values(SocialMediaAgencySliceError).some((error) => error === true);
+    const ValueData = Object.values(SocialMediaData).some((value) => value !== "");
+
+    useEffect(() => {
+        if (ValueData && hasErrors) {
+            dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: false, CurrentPage: 3 }));
+        } else if (ValueData) {
+            if (SocialMediaData.HotelApplicable === "True") {
+                dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: true, CurrentPage: 4 }));
+            } else if (SocialMediaData.HotelApplicable === "False") {
+                dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: false, CurrentPage: 3 }));
+            } else {
+                dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: true, CurrentPage: 4 }));
+            }
+        }
+    }, [SocialMediaData, ValueData, dispatch, hasErrors]);
 
 
     useEffect(() => {
+        console.log("SliceData");
         SetSocialMediaData(sliceData);
-        // dispatch(updateSocialMediaAgency(sliceData));
-    }, [dispatch, sliceData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [!sliceData.hasErrors]);
 
 
     return (
@@ -69,8 +89,8 @@ const SocialMediaAgency = () => {
                             value={SocialMediaData.NameOfAgency || ""}
                             name="NameOfAgency"
                             placeholder="Enter Name of the Agency"
-                            className={`border h-9 rounded-lg p-2 ${SocialMediaData.HotelApplicable ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.NameOfAgency ? "border-2 border-red-500" : "border border-gray-300"} `}
-                            disabled={SocialMediaData.HotelApplicable}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.NameOfAgency ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
                     </aside>
                     <aside className='flex flex-col w-[50%]'>
@@ -81,8 +101,8 @@ const SocialMediaAgency = () => {
                             value={SocialMediaData.PrimaryContactName || ""}
                             name="PrimaryContactName"
                             placeholder="Enter Primary Contact Name"
-                            className={`border h-9 rounded-lg p-2 ${SocialMediaData.HotelApplicable ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactName ? "border-2 border-red-500" : "border border-gray-300"} `}
-                            disabled={SocialMediaData.HotelApplicable}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactName ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
                     </aside>
                 </section>
@@ -95,8 +115,8 @@ const SocialMediaAgency = () => {
                             value={SocialMediaData.PrimaryContactEmail || ""}
                             name="PrimaryContactEmail"
                             placeholder="Enter Primary Contact Email Address"
-                            className={`border h-9 rounded-lg p-2 ${SocialMediaData.HotelApplicable ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactEmail ? "border-2 border-red-500" : "border border-gray-300"} `}
-                            disabled={SocialMediaData.HotelApplicable}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactEmail ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
                     </aside>
                     <aside className='flex flex-col w-[50%]'>
@@ -107,16 +127,16 @@ const SocialMediaAgency = () => {
                             value={SocialMediaData.PrimaryContactNumber || ""}
                             name="PrimaryContactNumber"
                             placeholder="Enter Primary Contact Phone Number"
-                            className={`border h-9 rounded-lg p-2 ${SocialMediaData.HotelApplicable ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactNumber ? "border-2 border-red-500" : "border border-gray-300"} `}
-                            disabled={SocialMediaData.HotelApplicable}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactNumber ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
                     </aside>
                 </section>
                 <p className='flex items-center gap-5'>
                     <span>Not Applicable/Hotel does not use agency </span>
                     <input
-                        onChange={handleSocialMediaData}
-                        checked={SocialMediaData.HotelApplicable || false}
+                        onChange={handleCheckboxChange}
+                        checked={SocialMediaData.HotelApplicable === "True" ? true : false || false}
                         name="HotelApplicable"
                         className='relative top-[2px] h-4 w-5'
                         type='checkbox'

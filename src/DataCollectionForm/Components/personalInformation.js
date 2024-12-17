@@ -123,7 +123,7 @@ const PersonalInformation = ({ Border }) => {
               value={Personaldata.Title || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Title"
-              className={` h-9 rounded-lg p-2 ${PersonalInfoError.Title ? "border-2 border-red-500" : "border border-gray-300"}`}
+              className={` h-9 rounded-lg p-2 ${PersonalInfoError.Title ? "border-2 border-red-500 " : "border border-gray-300"}`}
             />
           </aside>
           <aside className='flex flex-col w-[50%]'>

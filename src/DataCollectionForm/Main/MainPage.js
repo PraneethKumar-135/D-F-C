@@ -19,6 +19,7 @@ function MainPage() {
     const [Loading, setLoading] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
     const [Alldata, setAllData] = useState(false)
+    const [Editor, setEditor] = useState({});
     const totalPages = 4;
     const dispatch = useDispatch();
 
@@ -35,10 +36,11 @@ function MainPage() {
             setTimeout(() => {
                 setCurrentPage(PageUpdate);
                 setTransitioning(false);
-                // dispatch(updateHotelPageToggle(true))
-                // dispatch(updateSocialMediaAgencyToggle(true));
             }, 300);
             dispatch(updatebuttonClick(false));
+            if (currentPage === 4) {
+                dispatch(editMainPage(true))
+            }
         } else {
             setButtonclick(true)
             setCurrentPage(PageUpdate);
@@ -84,7 +86,14 @@ function MainPage() {
             setLoading(false)
         }, 1000)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [PageToogle])
+    }, [PageToogle, Editor])
+
+    const handleAlldataEdit = (data) => {
+        setEditor(data);
+        console.log(data);
+        dispatch(updatedCurrentPage(data.currentPage))
+        
+    };
 
 
     console.log("CurrentPage: " + currentPage);
@@ -93,7 +102,7 @@ function MainPage() {
 
     return (
         <>
-            {Alldata ? <AllData /> : (
+            {Alldata ? (<AllData handleAlldataEdit={handleAlldataEdit} />) : (
                 <div className="w-full relative">
                     {Loading ? <LoadingPage /> : (
                         <>

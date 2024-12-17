@@ -12,12 +12,12 @@ const App = () => {
   return (
     <div>
       <Provider store={store}>
-        {/* <MainPage /> */}
+        <MainPage />
         {/* < PersonalInformation/> */}
         {/* < HotelInformation/> */}
         {/* < SocialMediaAgency/> */}
         {/* <SocialMediaInfo/> */}
-        <AllData/>
+        {/* <AllData/> */}
       </Provider>
     </div>
   )

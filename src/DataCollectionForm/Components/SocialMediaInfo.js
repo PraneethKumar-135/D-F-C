@@ -6,16 +6,18 @@ import { updatebuttonClick } from '../../Redux/Slice/PersonalInfoSlice';
 const SocialMediaInfo = () => {
     const dispatch = useDispatch();
     const sliceData = useSelector((state) => state.socialMediaInfo.SocialMediaInformation);
-    const mainPageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
+    const mainPageToogle = useSelector((state) => state.personalInformation.PageToogle)
+    const [Incomplete, setIncomplete] = useState(mainPageToogle);
+    const PageUpdate = true;
     const initialAccountsState = {
-        Facebook: false,
-        Instagram: false,
-        Linkedin: false,
-        Pinterest: false,
-        TikTok: false,
-        "X (Twitter)": false,
-        YouTube: false,
-        Others: false,
+        "Facebook": false,
+        "Instagram": false,
+        "LinkedIn": false,
+        "Pinterest": false,
+        "TikTok": false,
+        "Twitter": false,
+        "YouTube": false,
+        "Other": false,
         'I Dont Know': false,
     };
     const [socialMediaAccount, setSocialMediaAccount] = useState(initialAccountsState);
@@ -30,14 +32,14 @@ const SocialMediaInfo = () => {
             setSocialMediaData((prevData) => ({
                 ...prevData,
                 [name]: {
-                    agencyName: '',
-                    contactName: '',
-                    email: '',
-                    phone: '',
-                    url: '',
+                    sma_name: '',
+                    sma_person: '',
+                    sma_email: '',
+                    sma_phone: '',
+                    pageURL: '',
                     pageID: '',
-                    isInFBM: false,
-                    dcubeAdded: null,
+                    mi_fbm: false,
+                    added_dcube: null,
                 },
             }));
         } else {
@@ -51,11 +53,11 @@ const SocialMediaInfo = () => {
 
     const isPlatformComplete = (data) => {
         return (
-            data.agencyName &&
-            data.contactName &&
-            data.email &&
-            data.phone &&
-            data.url &&
+            data.sma_name &&
+            data.sma_person &&
+            data.sma_email &&
+            data.sma_phone &&
+            data.pageURL &&
             data.pageID
         );
     };
@@ -66,20 +68,23 @@ const SocialMediaInfo = () => {
             [platform]: {
                 ...socialMediaData[platform],
                 [field]: value,
-                // Enforce `dcubeAdded` logic based on `isInFBM`
-                ...(field === 'isInFBM' && value === true ? { dcubeAdded: true } : {}),
+                // Enforce `added_dcube` logic based on `isInFBM`
+                ...(field === 'mi_fbm' && value === true ? { added_dcube: true } : {}),
             },
         };
 
         const incompletePlatforms = Object.keys(updatedData).filter(
             (platform) => !isPlatformComplete(updatedData[platform])
         );
+        console.log(incompletePlatforms);
 
         if (incompletePlatforms.length === 0) {
-            // dispatch(updatebuttonClick(false));
-            // } else {
-            dispatch(updateSocialMediaAccounts(updatedData));
-            dispatch(updatebuttonClick(true));
+            setIncomplete(true)
+            // dispatch(updateSocialMediaAccounts(updatedData));
+            // dispatch(updatebuttonClick(true));
+        } else if (incompletePlatforms.length > 0) {
+            setIncomplete(false)
+            dispatch(updatebuttonClick(false));
         }
 
         setSocialMediaData(updatedData);
@@ -87,8 +92,19 @@ const SocialMediaInfo = () => {
 
 
 
+    useEffect(() => {
+        if (Object.keys(socialMediaData).length > 0 && Incomplete) {
+            dispatch(updateSocialMediaAccounts(socialMediaData));
+            dispatch(updatebuttonClick(true));
+        }
+    }, [socialMediaData, dispatch, Incomplete]);
+    
+    console.log(Object.keys(socialMediaData));
+    console.log(Incomplete);
 
-    // console.log(socialMediaData);
+
+
+
     useEffect(() => {
         if (sliceData) {
             setSocialMediaData(sliceData);
@@ -98,8 +114,9 @@ const SocialMediaInfo = () => {
             }, {});
             setSocialMediaAccount(updatedAccountsState);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainPageToogle]);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [PageUpdate, sliceData, mainPageToogle]);
 
 
     return (
@@ -149,8 +166,8 @@ const SocialMediaInfo = () => {
                                             <input
                                                 placeholder="Enter Agency Name"
                                                 className='border h-9 rounded-lg p-2'
-                                                value={socialMediaData[platform]?.agencyName || ''}
-                                                onChange={(e) => handleFieldChange(platform, 'agencyName', e.target.value)}
+                                                value={socialMediaData[platform]?.sma_name || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'sma_name', e.target.value)}
                                             />
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
@@ -158,8 +175,8 @@ const SocialMediaInfo = () => {
                                             <input
                                                 placeholder="Enter Contact Person Name"
                                                 className='border h-9 rounded-lg p-2'
-                                                value={socialMediaData[platform]?.contactName || ''}
-                                                onChange={(e) => handleFieldChange(platform, 'contactName', e.target.value)}
+                                                value={socialMediaData[platform]?.sma_person || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'sma_person', e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -170,8 +187,8 @@ const SocialMediaInfo = () => {
                                             <input
                                                 placeholder="Email Address"
                                                 className='border h-9 rounded-lg p-2'
-                                                value={socialMediaData[platform]?.email || ''}
-                                                onChange={(e) => handleFieldChange(platform, 'email', e.target.value)}
+                                                value={socialMediaData[platform]?.sma_email || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'sma_email', e.target.value)}
                                             />
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
@@ -179,8 +196,8 @@ const SocialMediaInfo = () => {
                                             <input
                                                 placeholder="Enter Phone Number"
                                                 className='border h-9 rounded-lg p-2'
-                                                value={socialMediaData[platform]?.phone || ''}
-                                                onChange={(e) => handleFieldChange(platform, 'phone', e.target.value)}
+                                                value={socialMediaData[platform]?.sma_phone || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'sma_phone', e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -202,8 +219,8 @@ const SocialMediaInfo = () => {
                                             <input
                                                 placeholder={`${platform} URL`}
                                                 className='border h-9 rounded-lg p-2'
-                                                value={socialMediaData[platform]?.url || ''}
-                                                onChange={(e) => handleFieldChange(platform, 'url', e.target.value)}
+                                                value={socialMediaData[platform]?.pageURL || ''}
+                                                onChange={(e) => handleFieldChange(platform, 'pageURL', e.target.value)}
                                             />
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
@@ -223,16 +240,16 @@ const SocialMediaInfo = () => {
                                             <label>Yes</label>
                                             <input
                                                 type='checkbox'
-                                                checked={socialMediaData[platform]?.isInFBM === true} // Checked only if explicitly true
-                                                onChange={(e) => handleFieldChange(platform, 'isInFBM', e.target.checked)}
+                                                checked={socialMediaData[platform]?.mi_fbm === true} // Checked only if explicitly true
+                                                onChange={(e) => handleFieldChange(platform, 'mi_fbm', e.target.checked)}
                                             />
                                         </span>
                                         <span className='flex items-center gap-3'>
                                             <label>No</label>
                                             <input
                                                 type='checkbox'
-                                                checked={!socialMediaData[platform]?.isInFBM} // Checked only if explicitly false
-                                                onChange={(e) => handleFieldChange(platform, 'isInFBM', !e.target.checked)}
+                                                checked={!socialMediaData[platform]?.mi_fbm} // Checked only if explicitly false
+                                                onChange={(e) => handleFieldChange(platform, 'mi_fbm', !e.target.checked)}
                                             />
                                         </span>
                                     </span>
@@ -242,7 +259,7 @@ const SocialMediaInfo = () => {
                         </section>
 
                         {/* Section 3 */}
-                        {!socialMediaData[platform]?.isInFBM && (
+                        {!socialMediaData[platform]?.mi_fbm && (
                             <section>
                                 <div className='border border-black rounded-lg px-5 py-2 text-xl bg-data-blue'>
                                     <h1 className='text-sm font-normal'>Section 3:  If your {platform} page is not enrolled in Marriott’s Facebook Business Manager (MI {platform.slice(0, 1)}BM), update below</h1>
@@ -254,16 +271,16 @@ const SocialMediaInfo = () => {
                                         <span className='flex items-center gap-3'>
                                             <input
                                                 type='radio'
-                                                checked={socialMediaData[platform]?.dcubeAdded === true}
-                                                onChange={() => handleFieldChange(platform, 'dcubeAdded', true)}
+                                                checked={socialMediaData[platform]?.added_dcube === true}
+                                                onChange={() => handleFieldChange(platform, 'added_dcube', true)}
                                             />
                                             <label>Yes</label>
                                         </span>
                                         <span className='flex items-center gap-3'>
                                             <input
                                                 type='radio'
-                                                checked={socialMediaData[platform]?.dcubeAdded === false}
-                                                onChange={() => handleFieldChange(platform, 'dcubeAdded', false)}
+                                                checked={socialMediaData[platform]?.added_dcube === false}
+                                                onChange={() => handleFieldChange(platform, 'added_dcube', false)}
                                             />
                                             <label>No</label>
                                         </span>

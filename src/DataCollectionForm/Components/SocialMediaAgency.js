@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateSocialMediaAgency, updateSocialMediaAgencyToggle } from '../../Redux/Slice/SocialMediaAgencySlice';
-import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { updateSocialMediaAgency } from '../../Redux/Slice/SocialMediaAgencySlice';
 
 const SocialMediaAgency = () => {
     const dispatch = useDispatch();
     const sliceData = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation);
-    const SocialMediaAgencySliceError = useSelector((state) => state.SocialMediaAgencyInfo.SocialMediaAgencySliceError);
-    const SocialMedaiToggle = useSelector((state) => state.SocialMediaAgencyInfo.SocialMedaiToggle);
+    const SocialMediaAgencyError = useSelector((state) => state.SocialMediaAgencyInfo.SocialMediaAgencyError);
+    const SocialMediaAgencyErrorMessage = useSelector((state) => state.SocialMediaAgencyInfo.SocialMediaAgencyErrorMessage);
 
     const [SocialMediaData, SetSocialMediaData] = useState({
         NameOfAgency: '',
         PrimaryContactName: '',
         PrimaryContactEmail: '',
         PrimaryContactNumber: '',
-        // HotelApplicable: "",
     });
 
     const handleCheckboxChange = (e) => {
@@ -27,7 +25,6 @@ const SocialMediaAgency = () => {
         }
 
     };
-    // 
 
     const handleSocialMediaData = (e) => {
         const { name, value, checked, type } = e.target;
@@ -37,37 +34,49 @@ const SocialMediaAgency = () => {
             [name]: value,
             HotelApplicable: null
         };
-        console.log("UpdatedData", updatedData);
         SetSocialMediaData(updatedData);
-        // dispatch(updateSocialMediaAgency(updatedData));
     };
-    console.log("SocialMediaData", SocialMediaData);
-    console.log("sliceData", sliceData);
-    console.log("SocialMediaAgencySliceError", SocialMediaAgencySliceError);
+
+    const areAllFieldsFilled = () => {
+        if (SocialMediaData.HotelApplicable === "True") {
+            return true;
+        }
+        if (SocialMediaData.HotelApplicable === "False") {
+            return false;
+        }
+
+        const requiredFields = [
+            'NameOfAgency',
+            'PrimaryContactName',
+            'PrimaryContactEmail',
+            'PrimaryContactNumber',
+        ];
+
+        return requiredFields.every(field =>
+            SocialMediaData[field] &&
+            SocialMediaData[field].toString().trim() !== ''
+        );
+    };
 
 
-    const hasErrors = Object.values(SocialMediaAgencySliceError).some((error) => error === true);
-    const ValueData = Object.values(SocialMediaData).some((value) => value !== "");
+
+    const hasErrors = Object.values(SocialMediaAgencyError).some((error) => error === true);
+    const ValueData = areAllFieldsFilled(SocialMediaData);
 
     useEffect(() => {
         if (ValueData && hasErrors) {
             dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: false, CurrentPage: 3 }));
         } else if (ValueData) {
-            if (SocialMediaData.HotelApplicable === "True") {
-                dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: true, CurrentPage: 4 }));
-            } else if (SocialMediaData.HotelApplicable === "False") {
-                dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: false, CurrentPage: 3 }));
-            } else {
-                dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: true, CurrentPage: 4 }));
-            }
+            dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: true, CurrentPage: 4 }));
+        } else if (!ValueData) {
+            dispatch(updateSocialMediaAgency({ ...SocialMediaData, ButtonClick: false, CurrentPage: 3 }));
         }
     }, [SocialMediaData, ValueData, dispatch, hasErrors]);
 
 
     useEffect(() => {
-        console.log("SliceData");
         SetSocialMediaData(sliceData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [!sliceData.hasErrors]);
 
 
@@ -82,54 +91,66 @@ const SocialMediaAgency = () => {
                 <p>Complete only if your hotel uses an outside agency to manage the hotel's social media accounts</p>
                 <section className='flex items-center gap-5 pt-7 pb-4'>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Name of Agency <span className='text-red-600 ml-1'>*</span></label>
+                        <label htmlFor='NameOfAgency' className="pb-1">Name of Agency <span className='text-red-600 ml-1'>*</span></label>
                         <input
+                            id='NameOfAgency'
                             type='text'
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.NameOfAgency || ""}
                             name="NameOfAgency"
                             placeholder="Enter Name of the Agency"
-                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.NameOfAgency ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencyError.NameOfAgency ? "border-2 border-red-500" : "border border-gray-300"} `}
                             disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
+                        {SocialMediaAgencyError.NameOfAgency && <span className='text-red-600 font-light text-sm pl-2'>{SocialMediaAgencyErrorMessage.NameOfAgency}</span>}
+
                     </aside>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Primary Contact<span className='text-red-600 ml-1'>*</span></label>
+                        <label htmlFor='PrimaryContactName' className="pb-1">Primary Contact<span className='text-red-600 ml-1'>*</span></label>
                         <input
+                            id='PrimaryContactName'
                             type='text'
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.PrimaryContactName || ""}
                             name="PrimaryContactName"
                             placeholder="Enter Primary Contact Name"
-                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactName ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencyError.PrimaryContactName ? "border-2 border-red-500" : "border border-gray-300"} `}
                             disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
+                        {SocialMediaAgencyError.PrimaryContactName && <span className='text-red-600 font-light text-sm pl-2'>{SocialMediaAgencyErrorMessage.PrimaryContactName}</span>}
+
                     </aside>
                 </section>
                 <section className='flex items-center gap-5 pb-7'>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Primary Contact Email Address </label>
+                        <label htmlFor='PrimaryContactEmail' className="pb-1">Primary Contact Email Address </label>
                         <input
+                            id='PrimaryContactEmail'
                             type='email'
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.PrimaryContactEmail || ""}
                             name="PrimaryContactEmail"
                             placeholder="Enter Primary Contact Email Address"
-                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactEmail ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencyError.PrimaryContactEmail ? "border-2 border-red-500" : "border border-gray-300"} `}
                             disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
+                        {SocialMediaAgencyError.PrimaryContactEmail && <span className='text-red-600 font-light text-sm pl-2'>{SocialMediaAgencyErrorMessage.PrimaryContactEmail}</span>}
+
                     </aside>
                     <aside className='flex flex-col w-[50%]'>
-                        <label className="pb-1">Primary Contact Phone Number</label>
+                        <label htmlFor='PrimaryContactNumber' className="pb-1">Primary Contact Phone Number</label>
                         <input
+                            id='PrimaryContactNumber'
                             type='number'
                             onChange={handleSocialMediaData}
                             value={SocialMediaData.PrimaryContactNumber || ""}
                             name="PrimaryContactNumber"
                             placeholder="Enter Primary Contact Phone Number"
-                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencySliceError.PrimaryContactNumber ? "border-2 border-red-500" : "border border-gray-300"} `}
+                            className={`border h-9 rounded-lg p-2 ${(SocialMediaData.HotelApplicable === "True" ? true : false) ? "bg-slate-200 cursor-no-drop" : ""} ${SocialMediaAgencyError.PrimaryContactNumber ? "border-2 border-red-500" : "border border-gray-300"} `}
                             disabled={SocialMediaData.HotelApplicable === "True" ? true : false}
                         />
+                        {SocialMediaAgencyError.PrimaryContactNumber && <span className='text-red-600 font-light text-sm pl-2'>{SocialMediaAgencyErrorMessage.PrimaryContactNumber}</span>}
+
                     </aside>
                 </section>
                 <p className='flex items-center gap-5'>

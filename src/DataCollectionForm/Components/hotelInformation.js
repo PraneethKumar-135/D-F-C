@@ -4,8 +4,7 @@ import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
 import countries from 'i18n-iso-countries';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateHotelInformation, updateHotelPageToggle } from '../../Redux/Slice/HotelInfoSlice';
-import { updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { updateHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
 const CountrySelect = ({ values, onChange, labels, ...rest }) => (
@@ -34,9 +33,8 @@ CountrySelect.propTypes = {
 const HotelInformation = () => {
   const dispatch = useDispatch();
   const sliceData = useSelector((state) => state.hotelInformation.HotelData);
-  const PersonalInfoError = useSelector((state) => state.hotelInformation.PersonalInfoError);
-  const HotelPageToggle = useSelector((state) => state.hotelInformation.HotelPageToggle);
-  const PageToogle = useSelector((state) => state.personalInformation.PageToogle);
+  const HotelInfoError = useSelector((state) => state.hotelInformation.HotelInfoError);
+  const HotelInfoErrorMessage = useSelector((state) => state.hotelInformation.HotelInfoErrorMessage);
   const [HotelInfoData, SetHotelInfoData] = useState({
     HotelName: '',
     MarshaCode: '',
@@ -54,7 +52,7 @@ const HotelInformation = () => {
 
     const updatedData = {
       ...HotelInfoData,
-      [name]: value, // This ensures the correct field is updated in the state
+      [name]: value, 
     };
     SetHotelInfoData(updatedData);
     dispatch(updateHotelInformation(updatedData))
@@ -74,32 +72,49 @@ const HotelInformation = () => {
     const updatedData = { ...HotelInfoData, isTheHotel: type === HotelInfoData.isTheHotel ? '' : type };
     SetHotelInfoData(updatedData);
   };
+  
+  const areAllFieldsFilled = () => {
+    const requiredFields = [
+      'HotelName',
+      'MarshaCode',
+      'Country',
+      'State',
+      'City',
+      'ZipCode',
+      'isTheHotel'
+    ];
 
-  const hasErrors = Object.values(PersonalInfoError).some((error) => error === true);
-  const ValueData = Object.values(HotelInfoData).some((value) => value !== "");
+    return requiredFields.every(field =>
+      HotelInfoData[field] &&
+      HotelInfoData[field].toString().trim() !== ''
+    );
+  };
 
+  const hasErrors = Object.values(HotelInfoError).some((error) => error === true);
+  const allFieldsFilled = areAllFieldsFilled();
 
   useEffect(() => {
-
-    if (ValueData && hasErrors) {
-      dispatch(updateHotelInformation({ ...HotelInfoData, ButtonClick: false, CurrentPage: 2 }));
-    } else if (ValueData) {
-      dispatch(updateHotelInformation({ ...HotelInfoData, ButtonClick: true, CurrentPage: 3 }));
+    if (allFieldsFilled && !hasErrors) {
+      dispatch(updateHotelInformation({
+        ...HotelInfoData,
+        ButtonClick: true,
+        CurrentPage: 3
+      }));
+    } else {
+      dispatch(updateHotelInformation({
+        ...HotelInfoData,
+        ButtonClick: false,
+        CurrentPage: 2
+      }));
     }
-  }, [HotelInfoData, ValueData, dispatch, hasErrors]);
-
+  }, [HotelInfoData, hasErrors, dispatch, allFieldsFilled]);
 
   useEffect(() => {
-    // if (!sliceData.hasErrors) {
-    console.log("SliceData");
     SetHotelInfoData(sliceData);
-    // }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!sliceData.hasErrors]);
 
 
-  console.log("HotelInfoData", sliceData);
-  // console.log("PersonalInfoError", hasErrors);
 
 
   return (
@@ -112,17 +127,30 @@ const HotelInformation = () => {
 
       <div className='border border-black rounded-lg px-10 py-2'>
         <aside className='flex flex-col py-1'>
-          <label className="pb-1">Name of the Hotel<span className='text-red-600 ml-1'>*</span></label>
+          <label htmlFor='HotelName' className="pb-1">Name of the Hotel<span className='text-red-600 ml-1'>*</span></label>
           <input
-            onChange={handleHoteInfoData}
-            value={HotelInfoData.HotelName || ""}
+            id='HotelName'
             name='HotelName'
             placeholder="Enter Hotel Name"
-            className={` h-9 rounded-lg p-2 ${PersonalInfoError.HotelName ? "border-2 border-red-500" : "border border-gray-300"}`} />
+            value={HotelInfoData.HotelName || ""}
+            onChange={handleHoteInfoData}
+            className={` h-9 rounded-lg p-2 ${HotelInfoError.HotelName ? "border-2 border-red-500" : "border border-gray-300"}`}
+          />
+          {HotelInfoError.HotelName && <span className='text-red-600 font-light text-sm pl-2'>{HotelInfoErrorMessage.HotelName}</span>}
+
         </aside>
         <aside className='flex flex-col py-1'>
-          <label className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
-          <input name='MarshaCode' value={HotelInfoData.MarshaCode || ""} onChange={handleHoteInfoData} placeholder="Enter MARSHA Code" className={` h-9 rounded-lg p-2 ${PersonalInfoError.MarshaCode ? "border-2 border-red-500" : "border border-gray-300"}`} />
+          <label htmlFor='MarshaCode' className="pb-1">MARSHA Code<span className='text-red-600 ml-1'>*</span></label>
+          <input
+            id='MarshaCode'
+            name='MarshaCode'
+            value={HotelInfoData.MarshaCode || ""}
+            onChange={handleHoteInfoData}
+            placeholder="Enter MARSHA Code"
+            className={` h-9 rounded-lg p-2 ${HotelInfoError.MarshaCode ? "border-2 border-red-500" : "border border-gray-300"}`}
+          />
+          {HotelInfoError.MarshaCode && <span className='text-red-600 font-light text-sm pl-2'>{HotelInfoErrorMessage.MarshaCode}</span>}
+
         </aside>
 
         <section className='flex flex-col py-1'>
@@ -166,18 +194,28 @@ const HotelInformation = () => {
                 />
               </aside>
               <aside className='flex flex-col w-[50%]'>
-                <label className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
-                <input name='State' value={HotelInfoData.State || ""} onChange={handleHoteInfoData} placeholder="Enter State" className={` h-9 rounded-lg p-2 ${PersonalInfoError.State ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                <label htmlFor='state' className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
+                <input
+                  id='state'
+                  name='State'
+                  value={HotelInfoData.State || ""}
+                  onChange={handleHoteInfoData}
+                  placeholder="Enter State"
+                  className={` h-9 rounded-lg p-2 ${HotelInfoError.State ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                {HotelInfoError.State && <span className='text-red-600 font-light text-sm pl-2'>{HotelInfoErrorMessage.State}</span>}
+
               </aside>
             </section>
             <section className='flex items-center gap-5 py-2'>
               <aside className='flex flex-col w-[50%]'>
-                <label className="pb-1">City <span className='text-red-600 ml-1'>*</span></label>
-                <input name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className={` h-9 rounded-lg p-2 ${PersonalInfoError.City ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                <label htmlFor='City' className="pb-1">City <span className='text-red-600 ml-1'>*</span></label>
+                <input id='City' name='City' value={HotelInfoData.City || ""} onChange={handleHoteInfoData} placeholder="Enter City" className={` h-9 rounded-lg p-2 ${HotelInfoError.City ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                {HotelInfoError.City && <span className='text-red-600 font-light text-sm pl-2'>{HotelInfoErrorMessage.City}</span>}
               </aside>
               <aside className='flex flex-col w-[50%]'>
-                <label className="pb-1">Zip Code <span className='text-red-600 ml-1'>*</span></label>
-                <input name='ZipCode' value={HotelInfoData.ZipCode || ""} onChange={handleHoteInfoData} placeholder="Enter Zip Code" className={` h-9 rounded-lg p-2 ${PersonalInfoError.ZipCode ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                <label htmlFor='ZipCode' className="pb-1">Zip Code <span className='text-red-600 ml-1'>*</span></label>
+                <input id='ZipCode' name='ZipCode' value={HotelInfoData.ZipCode || ""} type='number' onChange={handleHoteInfoData} placeholder="Enter Zip Code" className={` h-9 rounded-lg p-2 ${HotelInfoError.ZipCode ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                {HotelInfoError.ZipCode && <span className='text-red-600 font-light text-sm pl-2'>{HotelInfoErrorMessage.ZipCode}</span>}
               </aside>
             </section>
           </div>

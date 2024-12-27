@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
 import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
-import { updatebuttonClick, updatedCurrentPage, updateinputs, updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
+import { updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CountrySelect = ({ onChange, labels, ...rest }) => (
@@ -33,6 +33,7 @@ const PersonalInformation = ({ Border }) => {
   const dispatch = useDispatch();
   const sliceData = useSelector((state) => state.personalInformation.PersonalInfoData)
   const PersonalInfoError = useSelector((state) => state.personalInformation.PersonalInfoError)
+  const PersonalInfoErrorMessage = useSelector((state) => state.personalInformation.PersonalInfoErrorMessage)
   const [Personaldata, setPersonalData] = useState({
     FirstName: "",
     LastName: "",
@@ -52,9 +53,7 @@ const PersonalInformation = ({ Border }) => {
       ...Personaldata,
       [name]: value,
     };
-    // console.log("Updated", updatedData);
     setPersonalData(updatedData);
-    dispatch(updatePersonalInformation(updatedData));
   };
 
   const handleCountryCodeChange = (callingCode) => {
@@ -63,11 +62,33 @@ const PersonalInformation = ({ Border }) => {
       CountryCode: `+${callingCode}`
     }
     setPersonalData(updatedData);
-    dispatch(updatePersonalInformation(updatedData));
   };
+  
+  const areAllFieldsFilled = () => {
+    const requiredFields = [
+      'FirstName',
+      'LastName',
+      'Title',
+      'Email',
+      'Eid',
+      'CountryCode',
+      'PhoneNumber'
+    ];
+    
+    return requiredFields.every(field =>
+      Personaldata[field] &&
+      Personaldata[field].toString().trim() !== ''
+    );
+  };
+  
+  const allFieldsFilled = areAllFieldsFilled(Personaldata);
 
 
-  // console.log("PersonalInfo", sliceData);
+  useEffect(() => {
+    if (allFieldsFilled) {
+      dispatch(updatePersonalInformation(Personaldata));
+    }
+  }, [Personaldata, allFieldsFilled, dispatch])
 
 
   useEffect(() => { setPersonalData(sliceData) }, [dispatch, sliceData,]);
@@ -94,41 +115,48 @@ const PersonalInformation = ({ Border }) => {
       <div className='border border-black rounded-lg px-10 py-3'>
         <section className='flex items-center gap-5 py-2'>
           <aside className='flex flex-col w-[50%]'>
-            <label className="pb-1">First Name <span className="text-red-600 ml-1">*</span></label>
+            <label htmlFor='FirstName' className="pb-1">First Name <span className="text-red-600 ml-1">*</span></label>
             <input
+              id="FirstName"
               name="FirstName"
               value={Personaldata.FirstName || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your First Name"
               className={` h-9 rounded-lg p-2 ${PersonalInfoError.FirstName ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
+            {PersonalInfoError.FirstName && <span className='text-red-600 font-light text-sm pl-2'>{PersonalInfoErrorMessage.FirstName}</span>}
           </aside>
           <aside className='flex flex-col w-[50%]'>
-            <label className="pb-1">Last Name <span className='text-red-600 ml-1'>*</span></label>
+            <label htmlFor='LastName' className="pb-1">Last Name <span className='text-red-600 ml-1'>*</span></label>
             <input
+              id='LastName'
               name="LastName"
               value={Personaldata.LastName || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Last Name"
               className={` h-9 rounded-lg p-2 ${PersonalInfoError.LastName ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
+            {PersonalInfoError.LastName && <span className='text-red-600 font-light text-sm pl-2'>{PersonalInfoErrorMessage.LastName}</span>}
           </aside>
         </section>
 
         <section className='flex items-center gap-5 py-2'>
           <aside className='flex flex-col w-[50%]'>
-            <label className="pb-1">Title <span className='text-red-600 ml-1'>*</span></label>
+            <label htmlFor='Title' className="pb-1">Title <span className='text-red-600 ml-1'>*</span></label>
             <input
+              id='Title'
               name="Title"
               value={Personaldata.Title || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Title"
               className={` h-9 rounded-lg p-2 ${PersonalInfoError.Title ? "border-2 border-red-500 " : "border border-gray-300"}`}
             />
+            {PersonalInfoError.Eid && <span className='text-red-600 font-light text-sm pl-2'>{PersonalInfoErrorMessage.Title}</span>}
           </aside>
           <aside className='flex flex-col w-[50%]'>
-            <label className="pb-1">Email <span className='text-red-600 ml-1'>*</span></label>
+            <label htmlFor='Email' className="pb-1">Email <span className='text-red-600 ml-1'>*</span></label>
             <input
+              id='Email'
               name="Email"
               type='email'
               value={Personaldata.Email || ""}
@@ -136,18 +164,22 @@ const PersonalInformation = ({ Border }) => {
               placeholder="Enter Your Email"
               className={` h-9 rounded-lg p-2 ${PersonalInfoError.Email ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
+            {PersonalInfoError.Email && <span className='text-red-600 font-light text-sm pl-2'>{PersonalInfoErrorMessage.Email}</span>}
           </aside>
         </section>
 
         <section className='flex flex-col w-[50%] py-2'>
-          <label className="pb-1">EID <span className='text-red-600 ml-1'>*</span></label>
+          <label htmlFor='Eid' className="pb-1">EID <span className='text-red-600 ml-1'>*</span></label>
           <input
+            id='Eid'
             name="Eid"
+            type='text'
             value={Personaldata.Eid || ""}
             onChange={handlePersonalData}
             placeholder="Enter Employee ID"
             className={` h-9 rounded-lg p-2 ${PersonalInfoError.Eid ? "border-2 border-red-500" : "border border-gray-300"}`}
           />
+          {PersonalInfoError.Eid && <span className='text-red-600 font-light text-sm pl-2'>{PersonalInfoErrorMessage.Eid}</span>}
         </section>
 
         <section className='flex gap-5 py-2'>
@@ -159,15 +191,18 @@ const PersonalInformation = ({ Border }) => {
             />
           </aside>
           <aside className='flex flex-col w-[85%]'>
-            <label className="pb-1">Phone <span className='text-red-600 ml-1'>*</span></label>
+            <label htmlFor='PhoneNumber' className="pb-1">Phone <span className='text-red-600 ml-1'>*</span></label>
             <input
+              id='PhoneNumber'
               name="PhoneNumber"
               type='number'
+              maxLength={10}
               value={Personaldata.PhoneNumber || ""}
               onChange={handlePersonalData}
               placeholder="Enter Your Phone Number"
               className={` h-9 rounded-lg p-2 ${PersonalInfoError.PhoneNumber ? "border-2 border-red-500" : "border border-gray-300"}`}
             />
+            {PersonalInfoError.PhoneNumber && <span className='text-red-600 font-light text-sm pl-2'>{PersonalInfoErrorMessage.PhoneNumber}</span>}
           </aside>
         </section>
       </div>

@@ -1,44 +1,68 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 export const SocialMediaAgencySlice = createSlice({
     name: "SocialMediaAgencyInfo",
     initialState: {
         AgencyInformation: {},
-        SocialMediaAgencySliceError: {},
+        SocialMediaAgencyError: {},  
+        SocialMediaAgencyErrorMessage: {},
         SocialMedaiToggle: false
     },
     reducers: {
         updateSocialMediaAgency: (state, action) => {
             const PayloadData = action.payload;
-            console.log("PayloadData", PayloadData);
-
+            
+            
+            Object.keys(state.SocialMediaAgencyError).forEach((field) => {
+                state.SocialMediaAgencyError[field] = false; 
+            });
 
             Object.keys(PayloadData).forEach((field) => {
-                if (PayloadData[field] === "") {
-                    // console.log("Please enter", field);
-                    state.SocialMediaAgencySliceError[field] = true; // Set error to true
-                } else {
-                    state.SocialMediaAgencySliceError[field] = false; // Clear error if resolved
+                const value = PayloadData[field];
+
+               
+                if (typeof value === 'string') {
+                    const trimmedValue = value.trim();
+
+                
+                    if (trimmedValue === "") {
+                        state.SocialMediaAgencyError[field] = true; 
+                        state.SocialMediaAgencyErrorMessage[field] = `${field} Should Not contain Empty Field`; 
+                    } else {
+                        if (field === 'PrimaryContactNumber') {
+                            
+                            if (!/^\d{10}$/.test(trimmedValue)) {
+                                state.SocialMediaAgencyError[field] = true;
+                                state.SocialMediaAgencyErrorMessage[field] = `${field} must be exactly 10 digits`; 
+                            } else {
+                                state.SocialMediaAgencyError[field] = false; 
+                                state.SocialMediaAgencyErrorMessage[field] = ""; 
+                            }
+                        } else if (field === 'PrimaryContactEmail') {
+                           
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue)) {
+                                state.SocialMediaAgencyError[field] = true; 
+                                state.SocialMediaAgencyErrorMessage[field] = "Email Should Contain '@' , '.'"; 
+                            } else {
+                                state.SocialMediaAgencyErrorMessage[field] = ""; 
+                            }
+                        }
+                    }
                 }
             });
 
-            const hasErrors = Object.values(state.SocialMediaAgencySliceError).some((error) => error === true);
-            console.log(hasErrors);
-
+            
+            const hasErrors = Object.values(state.SocialMediaAgencyError).some((error) => error === true);
 
             if (hasErrors) {
-                console.log("Errors present.");
                 state.AgencyInformation = { HasErrors: hasErrors };
             } else {
-                // console.log("Payload updated successfully.");
                 state.AgencyInformation = { ...PayloadData, HasErrors: hasErrors };
             }
         },
         updateSocialMediaAgencyToggle: (state, action) => {
             state.SocialMedaiToggle = action.payload;
         }
-
     }
 });
 

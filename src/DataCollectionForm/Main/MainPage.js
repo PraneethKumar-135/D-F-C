@@ -6,14 +6,13 @@ import SocialMediaInfo from '../Components/SocialMediaInfo';
 import AllData from './AllData';
 import { useDispatch, useSelector } from 'react-redux';
 import { editMainPage, updatebuttonClick, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
-import { updateHotelPageToggle } from '../../Redux/Slice/HotelInfoSlice';
-import { updateSocialMediaAgencyToggle } from '../../Redux/Slice/SocialMediaAgencySlice';
 
 
 function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
     const PageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
     const Buttonclick = useSelector((state) => state.personalInformation.buttonClick)
+    const SaveButton = useSelector((state) => state.socialMediaInfo.SaveButton);
     const [currentPage, setCurrentPage] = useState(PageUpdate);
     const [buttonclicked, setButtonclick] = useState(Buttonclick);
     const [Loading, setLoading] = useState(false);
@@ -45,7 +44,6 @@ function MainPage() {
             setButtonclick(true)
             setCurrentPage(PageUpdate);
             setTransitioning(false);
-            // dispatch(updatebuttonClick(false))
         }
     };
 
@@ -61,7 +59,7 @@ function MainPage() {
     };
 
     const handleAlldataPage = () => {
-        if (Buttonclick) {
+        if (SaveButton) {
             setLoading(true);
             setTimeout(() => {
                 setAllData(true)
@@ -90,15 +88,10 @@ function MainPage() {
 
     const handleAlldataEdit = (data) => {
         setEditor(data);
-        console.log(data);
         dispatch(updatedCurrentPage(data.currentPage))
-        
     };
 
 
-    console.log("CurrentPage: " + currentPage);
-    // console.log("Button: " + buttonclicked);
-    // console.log("sliceButton",Buttonclick);
 
     return (
         <>

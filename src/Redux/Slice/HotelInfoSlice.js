@@ -4,15 +4,8 @@ const HotelInfoSlice = createSlice({
     name: "hotelInformation",
     initialState: {
         HotelData: {},
-        PersonalInfoError: {
-            HotelName: false,
-            MarshaCode: false,
-            isTheHotel: false,
-            Country: false,
-            State: false,
-            City: false,
-            ZipCode: false
-        },
+        HotelInfoError: {},
+        HotelInfoErrorMessage: {},
         HotelPageToggle: false,
         HasErrors: false
     },
@@ -20,11 +13,34 @@ const HotelInfoSlice = createSlice({
         updateHotelInformation: (state, action) => {
             const PayloadData = action.payload;
 
-            Object.keys(state.PersonalInfoError).forEach((field) => {
-                state.PersonalInfoError[field] = !PayloadData[field];
+            Object.keys(state.HotelInfoError).forEach((field) => {
+                state.HotelInfoError[field] = false;
+                state.HotelInfoErrorMessage[field] = ''; 
             });
 
-            const hasErrors = Object.values(state.PersonalInfoError).some((error) => error === true);
+            Object.keys(PayloadData).forEach((field) => {
+                const value = PayloadData[field];
+
+                if (typeof value === 'string') {
+                    const trimmedValue = value.trim();
+                    
+                    if (trimmedValue === "") {
+                        state.HotelInfoError[field] = true; 
+                        state.HotelInfoErrorMessage[field] = `${field} Should Not contain Empty Field`; 
+                    } else {
+                        if (field === 'ZipCode') {
+                            if (!/^\d{6}$/.test(trimmedValue)) {
+                                state.HotelInfoError[field] = true;
+                                state.HotelInfoErrorMessage[field] = `${field} should be a valid 6-digit`;
+                            } else {
+                                state.HotelInfoErrorMessage[field] = "";
+                            }
+                        }
+                    }
+                }
+            });
+
+            const hasErrors = Object.values(state.HotelInfoError).some((error) => error === true);
 
             if (hasErrors) {
                 state.HasErrors = true;

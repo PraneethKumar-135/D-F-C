@@ -27,7 +27,7 @@ const SocialMediaAgency = () => {
     };
 
     const handleSocialMediaData = (e) => {
-        const { name, value, checked, type } = e.target;
+        const { name, value } = e.target;
 
         const updatedData = {
             ...SocialMediaData,

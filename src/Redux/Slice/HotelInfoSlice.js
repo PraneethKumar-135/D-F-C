@@ -15,7 +15,7 @@ const HotelInfoSlice = createSlice({
 
             Object.keys(state.HotelInfoError).forEach((field) => {
                 state.HotelInfoError[field] = false;
-                state.HotelInfoErrorMessage[field] = ''; 
+                state.HotelInfoErrorMessage[field] = '';
             });
 
             Object.keys(PayloadData).forEach((field) => {
@@ -23,10 +23,10 @@ const HotelInfoSlice = createSlice({
 
                 if (typeof value === 'string') {
                     const trimmedValue = value.trim();
-                    
+
                     if (trimmedValue === "") {
-                        state.HotelInfoError[field] = true; 
-                        state.HotelInfoErrorMessage[field] = `${field} Should Not contain Empty Field`; 
+                        state.HotelInfoError[field] = true;
+                        state.HotelInfoErrorMessage[field] = `${field} Should Not contain Empty Field`;
                     } else {
                         if (field === 'ZipCode') {
                             if (!/^\d{6}$/.test(trimmedValue)) {
@@ -57,11 +57,21 @@ const HotelInfoSlice = createSlice({
         },
         updateHotelPageToggle: (state, action) => {
             state.HotelPageToggle = action.payload;
+        },
+        resetHotelInformation: (state, action) => {
+            if (action.payload === true) {
+                state.HotelData = {};
+                state.HotelInfoError = {};
+                state.HotelInfoErrorMessage = {};
+                state.HotelPageToggle = false;
+                state.HasErrors = false
+            }
         }
+
     }
 });
 
 
-export const { updateHotelInformation, updateHotelPageToggle } = HotelInfoSlice.actions;
+export const { updateHotelInformation, updateHotelPageToggle, resetHotelInformation } = HotelInfoSlice.actions;
 
 export default HotelInfoSlice.reducer;

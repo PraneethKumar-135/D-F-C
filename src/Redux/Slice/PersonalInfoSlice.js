@@ -16,50 +16,48 @@ export const PersonalInfoSlice = createSlice({
         updatePersonalInformation: (state, action) => {
             const PayloadData = action.payload;
 
-           
+
             Object.keys(state.PersonalInfoError).forEach((field) => {
-                state.PersonalInfoError[field] = false; 
+                state.PersonalInfoError[field] = false;
             });
 
             Object.keys(PayloadData).forEach((field) => {
                 const value = PayloadData[field].trim();
 
-             
+
                 if (value === "") {
-                    state.PersonalInfoError[field] = true; 
-                    state.PersonalInfoErrorMessage[field] = `${field} Should Not contain Empty Field`; 
+                    state.PersonalInfoError[field] = true;
+                    state.PersonalInfoErrorMessage[field] = `${field} Should Not contain Empty Field`;
                 } else {
-                    
+
                     if (field === 'Eid') {
-                        
-                        
                         const hasLetter = /[a-zA-Z]/.test(value);
                         const hasNumber = /[0-9]/.test(value);
 
                         if (!hasLetter || !hasNumber) {
-                            state.PersonalInfoError[field] = true; 
-                            state.PersonalInfoErrorMessage[field] = "Employee Id is Wrong Formate. Eg(EID123)."; 
+                            state.PersonalInfoError[field] = true;
+                            state.PersonalInfoErrorMessage[field] = "Employee Id is Wrong Formate. Eg(EID123).";
                         }
                         else {
-                            state.PersonalInfoErrorMessage[field] = ""; 
+                            state.PersonalInfoErrorMessage[field] = "";
                         }
                     } else if (field === 'PhoneNumber') {
-                        
+
 
                         if (!/^\d{10}$/.test(value)) {
                             state.PersonalInfoError[field] = true;
-                            state.PersonalInfoErrorMessage[field] = "Phone Number must be exactly 10 digits"; 
+                            state.PersonalInfoErrorMessage[field] = "Phone Number must be exactly 10 digits";
                         } else {
-                            state.PersonalInfoError[field] = false; 
-                            state.PersonalInfoErrorMessage[field] = ""; 
+                            state.PersonalInfoError[field] = false;
+                            state.PersonalInfoErrorMessage[field] = "";
                         }
                     } else if (field === 'Email') {
-                       
+
                         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                            state.PersonalInfoError[field] = true; 
-                            state.PersonalInfoErrorMessage[field] = "Email Should Contain '@' , '.'"; 
+                            state.PersonalInfoError[field] = true;
+                            state.PersonalInfoErrorMessage[field] = "Email Should Contain '@' , '.'";
                         } else {
-                            state.PersonalInfoErrorMessage[field] = ""; 
+                            state.PersonalInfoErrorMessage[field] = "";
                         }
                     }
                 }
@@ -69,7 +67,7 @@ export const PersonalInfoSlice = createSlice({
 
             if (hasErrors) {
                 state.currentPage = 1;
-                state.buttonClick = false; 
+                state.buttonClick = false;
             } else {
                 state.PersonalInfoData = PayloadData;
                 state.currentPage = 2;
@@ -84,8 +82,18 @@ export const PersonalInfoSlice = createSlice({
         },
         updatebuttonClick: (state, action) => {
             state.buttonClick = action.payload;
+        },
+        resetPersonalInformation: (state, action) => {
+            
+            if (action.payload === true) {
+                state.PersonalInfoData = {};
+                state.currentPage = 1;
+                state.PageToogle = false;
+                state.buttonClick = false;
+                state.PersonalInfoError = {};
+                state.PersonalInfoErrorMessage = {}
+            }
         }
-
     },
     extraReducers: (builder) => {
 
@@ -104,7 +112,7 @@ export const PersonalInfoSlice = createSlice({
                 state.currentPage = SocialMediaAgency.CurrentPage;
             }
         });
-        
+
     },
 })
 
@@ -113,7 +121,8 @@ export const {
     updatedCurrentPage,
     updateinputs,
     editMainPage,
-    updatebuttonClick
+    updatebuttonClick,
+    resetPersonalInformation
 } = PersonalInfoSlice.actions;
 
 export default PersonalInfoSlice.reducer;

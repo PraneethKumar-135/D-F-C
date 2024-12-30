@@ -194,6 +194,9 @@ const SocialMediaInfo = () => {
                                                 value={socialMediaData[platform]?.pageURL || ''}
                                                 onChange={(e) => handleFieldChange(platform, 'pageURL', e.target.value)}
                                             />
+                                            {SocialMediaErrorMessages[platform]?.pageURL && (
+                                                <p className='text-red-500 text-sm'>{SocialMediaErrorMessages[platform].pageURL}</p>
+                                            )}
                                         </div>
                                         <div className='flex flex-col w-[50%]'>
                                             <label className="pb-1">{platform} Page ID</label>
@@ -203,6 +206,9 @@ const SocialMediaInfo = () => {
                                                 value={socialMediaData[platform]?.pageID || ''}
                                                 onChange={(e) => handleFieldChange(platform, 'pageID', e.target.value)}
                                             />
+                                            {SocialMediaErrorMessages[platform]?.pageID && (
+                                                <p className='text-red-500 text-sm'>{SocialMediaErrorMessages[platform].pageID}</p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -251,8 +257,8 @@ const SocialMediaInfo = () => {
                                         <span className='flex items-center gap-3'>
                                             <input
                                                 type='radio'
-                                                checked={socialMediaData[platform]?.added_dcube === false}
-                                                onChange={() => handleFieldChange(platform, 'added_dcube', false)}
+                                                checked={socialMediaData[platform]?.added_dcube === "false"}
+                                                onChange={() => handleFieldChange(platform, 'added_dcube', "false")}
                                             />
                                             <label>No</label>
                                         </span>

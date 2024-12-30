@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { editMainPage } from '../../Redux/Slice/PersonalInfoSlice';
+import { editMainPage, resetPersonalInformation, updatedCurrentPage } from '../../Redux/Slice/PersonalInfoSlice';
 import { FaRegEye } from 'react-icons/fa';
 import { LuEyeClosed } from 'react-icons/lu';
 import { GiCheckMark, GiCrossMark } from 'react-icons/gi';
 import axios from 'axios';
 import { FaCircleCheck } from 'react-icons/fa6';
+import { resetHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
+import { resetSocialMediaAgencyInformation } from '../../Redux/Slice/SocialMediaAgencySlice';
+import { resetSocialMediaInformation } from '../../Redux/Slice/SocialMediaSlice';
 
 const AllData = ({ handleAlldataEdit }) => {
     const dispatch = useDispatch();
@@ -16,29 +19,6 @@ const AllData = ({ handleAlldataEdit }) => {
     const HotelInfo = useSelector((state) => state.hotelInformation.HotelData);
     const SocialMediaAgencyInfo = useSelector((state) => state.SocialMediaAgencyInfo.AgencyInformation);
     const SocialMediaData = useSelector((state) => state.socialMediaInfo.SocialMediaInformation);
-    // const SocialMediaData =
-    // {
-    //     "Facebook": {
-    //         "agencyName": "Agency ",
-    //         "contactName": "Agency ",
-    //         "email": "Agency ",
-    //         "phone": "Agency ",
-    //         "url": "Agency ",
-    //         "pageID": "Agency ",
-    //         "isInFBM": false,
-    //         "dcubeAdded": true
-    //     },
-    //     "Instagram": {
-    //         "agencyName": "instaAgency ",
-    //         "contactName": "Agency ",
-    //         "email": "Agency ",
-    //         "phone": "Agency ",
-    //         "url": "Agency ",
-    //         "pageID": "Agency ",
-    //         "isInFBM": false,
-    //         "dcubeAdded": true
-    //     },
-    // }
 
     const handleUrlToggle = (platform) => {
         setUrlToggle((prevState) => ({
@@ -58,9 +38,9 @@ const AllData = ({ handleAlldataEdit }) => {
     const handlEditFunction = (data) => {
         handleAlldataEdit(data);
         if (data.currentPage === 3 || data.currentPage === 4) {
-            dispatch(editMainPage(true))
+            dispatch(editMainPage(true));
         } else {
-            dispatch(editMainPage(false))
+            dispatch(editMainPage(false));
         }
     }
 
@@ -102,30 +82,32 @@ const AllData = ({ handleAlldataEdit }) => {
 
         axios.request(config)
             .then((response) => {
-                console.log(response.status);
-                console.log(response.data);
-                if (response.status === 200) {
-                    setApiData({ Status: response.status, Response: response.data.message });
-                } else {
-                    setApiData({ Status: response.status, Response: "Unexpected Error" });
-                }
+                console.log(JSON.stringify(response.status));
+                console.log(JSON.stringify(response.data));
+                setApiData({ "Status": response.status, "Response": response.data.message })
             })
             .catch((error) => {
-                console.error(error);
-                if (error.response) {
-                    // Server responded with a status code outside 2xx
-                    setApiData({ Status: error.response.status, Response: error.response.data?.detail || "Unexpected Error" });
-                } else if (error.request) {
-                    // Request made but no response received
-                    setApiData({ Status: 500, Response: "Network Error, Please Try Again" });
-                } else {
-                    // Something happened while setting up the request
-                    setApiData({ Status: 500, Response: "An Unexpected Error Occurred" });
-                }
+                // console.log(error);
+                console.log(JSON.stringify(error.response.status));
+                console.log(JSON.stringify(error.response.data));
+                setApiData({ "Status": error.response.status, "Response": error.response.data.detail })
             });
-
     }
 
+
+
+    const handleClose = () => {
+        const currentStatus = ApiData.Status;
+        if (currentStatus === 201) {
+            dispatch(resetSocialMediaInformation(true));
+            dispatch(resetSocialMediaAgencyInformation(true));
+            dispatch(resetHotelInformation(true));
+            dispatch(resetPersonalInformation(true));
+            dispatch(updatedCurrentPage(1))
+            dispatch(editMainPage(true));
+        }
+        setApiData({ Status: null, Response: '' });
+    };
 
 
     return (
@@ -143,7 +125,7 @@ const AllData = ({ handleAlldataEdit }) => {
                     </div>
                     <button
                         className="bg-blue-500 text-white px-4 py-2 rounded-sm hover:bg-blue-600"
-                        onClick={() => { setPageIDToggle({}) }}
+                        onClick={() => handleClose()}
                     >
                         Ok
                     </button>

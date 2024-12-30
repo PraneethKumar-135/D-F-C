@@ -12,20 +12,20 @@ const socialMediaSlice = createSlice({
         updateSocialMediaAccounts: (state, action) => {
             const { platform, field, value } = action.payload;
 
-           
+
             if (!state.SocialMediaInformation[platform]) {
                 state.SocialMediaInformation[platform] = {};
                 state.SocialMediaErrors[platform] = {};
                 state.SocialMediaErrorMessages[platform] = {};
             }
 
-          
+
             state.SocialMediaInformation[platform][field] = value;
 
             delete state.SocialMediaErrors[platform][field];
             delete state.SocialMediaErrorMessages[platform][field];
 
-      
+
             switch (field) {
                 case 'sma_email':
                     if (!value) {
@@ -33,7 +33,7 @@ const socialMediaSlice = createSlice({
                         state.SocialMediaErrorMessages[platform][field] = 'Email is required.';
                     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                         state.SocialMediaErrors[platform][field] = true;
-                        state.SocialMediaErrorMessages[platform][field] = 'Email format is invalid.';
+                        state.SocialMediaErrorMessages[platform][field] = 'Email format is invalid. Should Contain "@" ,"."';
                     }
                     break;
 
@@ -91,7 +91,7 @@ const socialMediaSlice = createSlice({
                         delete state.SocialMediaErrors[platform].added_dcube;
                         delete state.SocialMediaErrorMessages[platform].added_dcube;
                     } else if (value === false) {
-                        state.SocialMediaInformation[platform].added_dcube = null; 
+                        state.SocialMediaInformation[platform].added_dcube = null;
                         state.SocialMediaErrorMessages[platform].added_dcube = 'Please select if this agency has added DCube.';
                     }
                     break;
@@ -100,27 +100,35 @@ const socialMediaSlice = createSlice({
                     break;
             }
 
-           
+
             const allPlatformsValid = Object.keys(state.SocialMediaInformation).every((platformKey) => {
                 const platformData = state.SocialMediaInformation[platformKey] || {};
                 const platformErrors = state.SocialMediaErrors[platformKey] || {};
 
-            
+
                 const requiredFields = ['sma_email', 'sma_phone', 'sma_name', 'sma_person', 'pageURL', 'pageID', 'added_dcube'];
                 const allFieldsFilled = requiredFields.every((field) => platformData[field] !== undefined && platformData[field] !== null && platformData[field] !== '');
 
-               
+
                 const noErrors = Object.values(platformErrors).every((error) => !error);
 
                 return allFieldsFilled && noErrors;
             });
 
-            
+
             state.SaveButton = allPlatformsValid;
 
         },
+        resetSocialMediaInformation: (state, action) => {
+            if (action.payload === true) {
+                state.SocialMediaInformation = {};
+                state.SocialMediaErrors = {};
+                state.SocialMediaErrorMessages = {};
+                state.SaveButton = false;
+            }
+        }
     },
 });
 
-export const { updateSocialMediaAccounts } = socialMediaSlice.actions;
+export const { updateSocialMediaAccounts, resetSocialMediaInformation } = socialMediaSlice.actions;
 export default socialMediaSlice.reducer;

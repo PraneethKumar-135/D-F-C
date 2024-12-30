@@ -10,7 +10,7 @@ import { editMainPage, updatebuttonClick, updatedCurrentPage } from '../../Redux
 
 function MainPage() {
     const PageUpdate = useSelector((state) => state.personalInformation.currentPage)
-    const PageToogle = useSelector((state) => state.personalInformation.mainPageToogle)
+    const PageToogle = useSelector((state) => state.personalInformation.PageToogle)
     const Buttonclick = useSelector((state) => state.personalInformation.buttonClick)
     const SaveButton = useSelector((state) => state.socialMediaInfo.SaveButton);
     const [currentPage, setCurrentPage] = useState(PageUpdate);
@@ -37,9 +37,6 @@ function MainPage() {
                 setTransitioning(false);
             }, 300);
             dispatch(updatebuttonClick(false));
-            if (currentPage === 4) {
-                dispatch(editMainPage(true))
-            }
         } else {
             setButtonclick(true)
             setCurrentPage(PageUpdate);
@@ -88,9 +85,8 @@ function MainPage() {
 
     const handleAlldataEdit = (data) => {
         setEditor(data);
-        dispatch(updatedCurrentPage(data.currentPage))
-    };
-
+        dispatch(updatedCurrentPage(data.currentPage));
+    }
 
 
     return (

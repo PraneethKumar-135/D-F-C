@@ -1,39 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
-import en from 'react-phone-number-input/locale/en';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { Country } from 'country-state-city';
 import { updatePersonalInformation } from '../../Redux/Slice/PersonalInfoSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-const CountrySelect = ({ onChange, labels, ...rest }) => (
-  <select
-    {...rest}
-    className='border h-9 rounded-lg'
-    onChange={(event) => {
-      const selectedCountry = event.target.value || undefined;
-      const callingCode = selectedCountry ? getCountryCallingCode(selectedCountry) : '';
-      onChange(callingCode);
-    }}
-  >
-    <option value="">{labels['ZZ']}</option>
-    {getCountries().map((country) => (
-      <option key={country} value={country}>
-        {labels[country]} +{getCountryCallingCode(country)}
-      </option>
-    ))}
-  </select>
-);
-
-CountrySelect.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  labels: PropTypes.objectOf(PropTypes.string).isRequired,
-};
-
 const PersonalInformation = ({ Border }) => {
   const dispatch = useDispatch();
-  const sliceData = useSelector((state) => state.personalInformation.PersonalInfoData)
-  const PersonalInfoError = useSelector((state) => state.personalInformation.PersonalInfoError)
-  const PersonalInfoErrorMessage = useSelector((state) => state.personalInformation.PersonalInfoErrorMessage)
+  const sliceData = useSelector((state) => state.personalInformation.PersonalInfoData);
+  const PersonalInfoError = useSelector((state) => state.personalInformation.PersonalInfoError);
+  const PersonalInfoErrorMessage = useSelector((state) => state.personalInformation.PersonalInfoErrorMessage);
+  const [selectedCountryIso, setSelectedCountryIso] = useState('');
+  const [countries, setcountries] = useState(Country.getAllCountries());
   const [Personaldata, setPersonalData] = useState({
     FirstName: "",
     LastName: "",
@@ -44,54 +20,49 @@ const PersonalInformation = ({ Border }) => {
     PhoneNumber: "",
   });
 
-
-
-
   const handlePersonalData = (e) => {
     const { name, value } = e.target;
+    // Update local state
     const updatedData = {
       ...Personaldata,
       [name]: value,
     };
     setPersonalData(updatedData);
+
+    // Dispatch individual field update to Redux
+    dispatch(updatePersonalInformation({
+      field: name,
+      value: value
+    }));
   };
 
-  const handleCountryCodeChange = (callingCode) => {
+  const handlecountriesCodeChange = (isoCode) => {
+    const selectedCountry = countries.find((c) => c.isoCode === isoCode);
+    const countryCode = `+${selectedCountry.phonecode}`;
+    
+    // Update local state
     const updatedData = {
       ...Personaldata,
-      CountryCode: `+${callingCode}`
-    }
+      CountryCode: countryCode
+    };
     setPersonalData(updatedData);
-  };
-  
-  const areAllFieldsFilled = () => {
-    const requiredFields = [
-      'FirstName',
-      'LastName',
-      'Title',
-      'Email',
-      'Eid',
-      'CountryCode',
-      'PhoneNumber'
-    ];
-    
-    return requiredFields.every(field =>
-      Personaldata[field] &&
-      Personaldata[field].toString().trim() !== ''
-    );
-  };
-  
-  const allFieldsFilled = areAllFieldsFilled(Personaldata);
+    setSelectedCountryIso(isoCode);
 
+    // Dispatch country code update to Redux
+    dispatch(updatePersonalInformation({
+      field: 'CountryCode',
+      value: countryCode
+    }));
+  };
 
-  useEffect(() => {
-    if (allFieldsFilled) {
-      dispatch(updatePersonalInformation(Personaldata));
+  // Load initial data from Redux store
+  React.useEffect(() => {
+    setPersonalData(sliceData);
+    const country = countries.find(c => `+${c.phonecode}` === sliceData.CountryCode?.toString());
+    if (country) {
+      setSelectedCountryIso(country.isoCode);
     }
-  }, [Personaldata, allFieldsFilled, dispatch])
-
-
-  useEffect(() => { setPersonalData(sliceData) }, [dispatch, sliceData,]);
+  }, [sliceData, countries]);
 
 
   return (
@@ -185,10 +156,18 @@ const PersonalInformation = ({ Border }) => {
         <section className='flex gap-5 py-2'>
           <aside className='flex flex-col w-[15%]'>
             <label className="pb-1">Country Code <span className='text-red-600 ml-1'>*</span></label>
-            <CountrySelect
-              labels={en}
-              onChange={handleCountryCodeChange}
-            />
+            <select
+              value={sliceData.CountryCode ? selectedCountryIso : sliceData.CountryCode}
+              className='border h-9 rounded-lg pl-1'
+              onChange={(e) => handlecountriesCodeChange(e.target.value)}
+            >
+              <option value="">Select country</option>
+              {countries.map((data) => (
+                <option key={data.isoCode} value={data.isoCode}>
+                  {data.name} +{data.phonecode}
+                </option>
+              ))}
+            </select>
           </aside>
           <aside className='flex flex-col w-[85%]'>
             <label htmlFor='PhoneNumber' className="pb-1">Phone <span className='text-red-600 ml-1'>*</span></label>

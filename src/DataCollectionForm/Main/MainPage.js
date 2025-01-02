@@ -23,7 +23,7 @@ function MainPage() {
     const dispatch = useDispatch();
 
     const LoadingPage = () => (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-50 z-10 ">
+        <div className="absolute top-[50%] left-0 right-0 bottom-[50%] flex justify-center items-center bg-opacity-50 z-10 ">
             <div className="text-2xl text-center">Please Wait While Your Details are Loading...</div>
         </div>
     );
@@ -33,12 +33,12 @@ function MainPage() {
         if (Buttonclick) {
             setButtonclick(false)
             setTimeout(() => {
-                setCurrentPage(PageUpdate);
                 setTransitioning(false);
-            }, 300);
+            }, 500);
+            setCurrentPage(PageUpdate);
             dispatch(updatebuttonClick(false));
         } else {
-            setButtonclick(true)
+            setButtonclick(true);
             setCurrentPage(PageUpdate);
             setTransitioning(false);
         }
@@ -60,7 +60,7 @@ function MainPage() {
             setLoading(true);
             setTimeout(() => {
                 setAllData(true)
-            }, 2000)
+            }, 1000)
             dispatch(editMainPage(false));
         } else {
             setButtonclick(true)
@@ -79,19 +79,24 @@ function MainPage() {
         setAllData(false);
         setTimeout(() => {
             setLoading(false)
-        }, 1000)
+        }, 800)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [PageToogle, Editor])
 
     const handleAlldataEdit = (data) => {
         setEditor(data);
         dispatch(updatedCurrentPage(data.currentPage));
+        setLoading(false);
+    }
+
+    const handleLoading = (data) => {
+        setLoading(data);
     }
 
 
     return (
         <>
-            {Alldata ? (<AllData handleAlldataEdit={handleAlldataEdit} />) : (
+            {Alldata ? (<AllData handleAlldataEdit={handleAlldataEdit} handleLoading={handleLoading} />) : (
                 <div className="w-full relative">
                     {Loading ? <LoadingPage /> : (
                         <>

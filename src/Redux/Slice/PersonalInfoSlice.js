@@ -14,62 +14,77 @@ export const PersonalInfoSlice = createSlice({
     },
     reducers: {
         updatePersonalInformation: (state, action) => {
-            const PayloadData = action.payload;
-
-
-            Object.keys(state.PersonalInfoError).forEach((field) => {
-                state.PersonalInfoError[field] = false;
-            });
-
-            Object.keys(PayloadData).forEach((field) => {
-                const value = PayloadData[field].trim();
-
-
-                if (value === "") {
-                    state.PersonalInfoError[field] = true;
-                    state.PersonalInfoErrorMessage[field] = `${field} Should Not contain Empty Field`;
-                } else {
-
-                    if (field === 'Eid') {
+            const { field, value } = action.payload;
+            
+            // Reset error for the current field
+            state.PersonalInfoError[field] = false;
+            state.PersonalInfoErrorMessage[field] = "";
+            
+            // Validate the current field
+            if (value.trim() === "") {
+                state.PersonalInfoError[field] = true;
+                state.PersonalInfoErrorMessage[field] = `${field} Should Not contain Empty Field`;
+            } else {
+                switch (field) {
+                    case 'FirstName':
+                    case 'LastName': {
+                        const hasNumber = /[0-9]/.test(value);
+                        if (hasNumber) {
+                            state.PersonalInfoError[field] = true;
+                            state.PersonalInfoErrorMessage[field] = `${field} Should not contain Numbers.`;
+                        }
+                        break;
+                    }
+                    case 'Eid': {
                         const hasLetter = /[a-zA-Z]/.test(value);
                         const hasNumber = /[0-9]/.test(value);
-
+                        
                         if (!hasLetter || !hasNumber) {
                             state.PersonalInfoError[field] = true;
-                            state.PersonalInfoErrorMessage[field] = "Employee Id is Wrong Formate. Eg(EID123).";
+                            state.PersonalInfoErrorMessage[field] = "Employee Id is Wrong Format. Eg(ABC123).";
                         }
-                        else {
-                            state.PersonalInfoErrorMessage[field] = "";
-                        }
-                    } else if (field === 'PhoneNumber') {
-
-
+                        break;
+                    }
+                    case 'PhoneNumber': {
                         if (!/^\d{10}$/.test(value)) {
                             state.PersonalInfoError[field] = true;
                             state.PersonalInfoErrorMessage[field] = "Phone Number must be exactly 10 digits";
-                        } else {
-                            state.PersonalInfoError[field] = false;
-                            state.PersonalInfoErrorMessage[field] = "";
                         }
-                    } else if (field === 'Email') {
-
+                        break;
+                    }
+                    case 'Email': {
                         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                             state.PersonalInfoError[field] = true;
-                            state.PersonalInfoErrorMessage[field] = "Email Should Contain '@' , '.'";
-                        } else {
-                            state.PersonalInfoErrorMessage[field] = "";
+                            state.PersonalInfoErrorMessage[field] = "Email Should Contain '@' , '.com'";
                         }
+                        break;
                     }
+                    default:
+                        // No specific validation for other fields
+                        break;
                 }
-            });
-
-            const hasErrors = Object.values(state.PersonalInfoError).some((error) => error === true);
-
-            if (hasErrors) {
+            }
+            
+            // Update the field in PersonalInfoData
+            state.PersonalInfoData = {
+                ...state.PersonalInfoData,
+                [field]: value
+            };
+            
+            // Check if all required fields are filled and valid
+            const requiredFields = ['FirstName', 'LastName', 'Title', 'Email', 'Eid', 'CountryCode', 'PhoneNumber'];
+            const allFieldsFilled = requiredFields.every(field => 
+                state.PersonalInfoData[field] && 
+                state.PersonalInfoData[field].toString().trim() !== ''
+            );
+            
+            const hasErrors = Object.values(state.PersonalInfoError).some(error => error === true);
+            
+            // Update page and button state based on validation
+            if (hasErrors || !allFieldsFilled) {
                 state.currentPage = 1;
                 state.buttonClick = false;
             } else {
-                state.PersonalInfoData = PayloadData;
                 state.currentPage = 2;
                 state.buttonClick = true;
             }
@@ -84,7 +99,7 @@ export const PersonalInfoSlice = createSlice({
             state.buttonClick = action.payload;
         },
         resetPersonalInformation: (state, action) => {
-            
+
             if (action.payload === true) {
                 state.PersonalInfoData = {};
                 state.currentPage = 1;

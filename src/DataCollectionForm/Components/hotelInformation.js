@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { getCountries } from 'react-phone-number-input';
-import en from 'react-phone-number-input/locale/en';
 import PropTypes from 'prop-types';
 import countries from 'i18n-iso-countries';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
+import { Country, State } from 'country-state-city';
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
 const CountrySelect = ({ values, onChange, labels, ...rest }) => (
@@ -44,35 +44,56 @@ const HotelInformation = () => {
     City: "",
     ZipCode: ""
   });
+  const [countries, setcountries] = useState(Country.getAllCountries());
+  const [states, setstates] = useState([]);
+  const [selectedcountries, setSelectedcountries] = useState(null);
+  const [selectedstate, setSelectedstate] = useState(null);
+
+  const [selectedCountryIso, setSelectedCountryIso] = useState('');
+  const [selectedStateIso, setSelectedStateIso] = useState('');
 
 
+  const handlecountriesCodeChange = (isoCode) => {
+    const selectedCountry = countries.find((c) => c.isoCode === isoCode);
+    setSelectedcountries(selectedCountry.name);
+    setSelectedCountryIso(isoCode);
+    setstates(State.getStatesOfCountry(selectedCountry.isoCode));
+    const updatedData = {
+      ...HotelInfoData,
+      Country: selectedCountry.name,
+    }
+    SetHotelInfoData(updatedData);
+    dispatch(updateHotelInformation(updatedData))
+  };
+
+  const handlestateChange = (isoCode) => {
+    const selectedstates = states.find((c) => c.isoCode === isoCode);
+    setSelectedstate(selectedstates.name);
+    setSelectedStateIso(isoCode);
+    const updatedData = {
+      ...HotelInfoData,
+      State: selectedstates.name,
+    }
+    SetHotelInfoData(updatedData);
+    dispatch(updateHotelInformation(updatedData))
+  }
 
   const handleHoteInfoData = (e) => {
     const { name, value } = e.target;
 
     const updatedData = {
       ...HotelInfoData,
-      [name]: value, 
+      [name]: value,
     };
     SetHotelInfoData(updatedData);
     dispatch(updateHotelInformation(updatedData))
   }
 
-
-  const handleCountryCodeChange = (countryName) => {
-    const updatedData = {
-      ...HotelInfoData,
-      Country: countryName,
-    }
-    SetHotelInfoData(updatedData);
-    dispatch(updateHotelInformation(updatedData))
-  };
-
   const handleCheckboxChange = (type) => {
     const updatedData = { ...HotelInfoData, isTheHotel: type === HotelInfoData.isTheHotel ? '' : type };
     SetHotelInfoData(updatedData);
   };
-  
+
   const areAllFieldsFilled = () => {
     const requiredFields = [
       'HotelName',
@@ -110,11 +131,24 @@ const HotelInformation = () => {
   }, [HotelInfoData, hasErrors, dispatch, allFieldsFilled]);
 
   useEffect(() => {
+    if (sliceData?.Country) {
+      const country = countries.find(c => c.name === sliceData.Country);
+      if (country) {
+        setSelectedCountryIso(country);
+        const countryStates = State.getStatesOfCountry(country.isoCode);
+        setstates(countryStates);
+
+        if (sliceData.State) {
+          const state = countryStates.find(s => s.name === sliceData.State);
+          if (state) {
+            setSelectedStateIso(state);
+          }
+        }
+      }
+    }
     SetHotelInfoData(sliceData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!sliceData.hasErrors]);
-
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!sliceData.hasErrors, countries]);
 
 
   return (
@@ -188,20 +222,33 @@ const HotelInformation = () => {
             <section className='flex items-center gap-5 py-2'>
               <aside className='flex flex-col w-[50%]'>
                 <label className="pb-1">Country <span className='text-red-600 ml-1'>*</span></label>
-                <CountrySelect
-                  labels={en}
-                  onChange={handleCountryCodeChange}
-                />
+                <select
+                  value={sliceData.Country ? selectedCountryIso?.isoCode : sliceData.Country}
+                  className="border h-9 rounded-lg pl-2"
+                  onChange={(e) => handlecountriesCodeChange(e.target.value)}
+                >
+                  <option value="">Select countries</option>
+                  {countries.map((data) => (
+                    <option key={data.isoCode} value={data.isoCode}>
+                      {data.name}
+                    </option>
+                  ))}
+                </select>
               </aside>
               <aside className='flex flex-col w-[50%]'>
                 <label htmlFor='state' className="pb-1">State <span className='text-red-600 ml-1'>*</span></label>
-                <input
-                  id='state'
-                  name='State'
-                  value={HotelInfoData.State || ""}
-                  onChange={handleHoteInfoData}
-                  placeholder="Enter State"
-                  className={` h-9 rounded-lg p-2 ${HotelInfoError.State ? "border-2 border-red-500" : "border border-gray-300"}`} />
+                <select
+                  value={sliceData.State ? selectedStateIso?.isoCode : sliceData.state}
+                  className="border h-9 rounded-lg pl-2"
+                  onChange={(e) => handlestateChange(e.target.value)}
+                >
+                  <option value="">Select State</option>
+                  {states.map((data) => (
+                    <option key={data.isoCode} value={data.isoCode}>
+                      {data.name}
+                    </option>
+                  ))}
+                </select>
                 {HotelInfoError.State && <span className='text-red-600 font-light text-sm pl-2'>{HotelInfoErrorMessage.State}</span>}
 
               </aside>

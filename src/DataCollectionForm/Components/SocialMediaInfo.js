@@ -6,7 +6,7 @@ const SocialMediaInfo = () => {
     const dispatch = useDispatch();
     const sliceData = useSelector((state) => state.socialMediaInfo.SocialMediaInformation);
     const SocialMediaErrorMessages = useSelector((state) => state.socialMediaInfo.SocialMediaErrorMessages);
-    const mainPageToogle = useSelector((state) => state.personalInformation.PageToogle)
+
     const initialAccountsState = {
         "Facebook": false,
         "Instagram": false,
@@ -18,8 +18,8 @@ const SocialMediaInfo = () => {
         "Other": false,
         'I Dont Know': false,
     };
-    const [socialMediaAccount, setSocialMediaAccount] = useState(initialAccountsState);
 
+    const [socialMediaAccount, setSocialMediaAccount] = useState(initialAccountsState);
     const [socialMediaData, setSocialMediaData] = useState({});
 
     const handleSocialMediaAccount = (e) => {
@@ -34,7 +34,7 @@ const SocialMediaInfo = () => {
                     sma_person: '',
                     sma_email: '',
                     sma_phone: '',
-                    pageURL: '',
+                    pageURL: 'https://', // Initial value
                     pageID: '',
                     mi_fbm: null,
                     added_dcube: null,
@@ -54,28 +54,49 @@ const SocialMediaInfo = () => {
             ...socialMediaData,
             [platform]: {
                 ...socialMediaData[platform],
-                [field]: value,
+                [field]: field === 'pageURL' ? ensureHttps(value) : value,
             },
         };
         setSocialMediaData(updatedData);
-
         dispatch(updateSocialMediaAccounts({ platform, field, value }));
     };
 
-
+    // Helper function to ensure URL starts with https://
+    const ensureHttps = (url) => {
+        if (!url) return 'https://';
+        if (!url.startsWith('https://') && !url.startsWith('http://')) {
+            return `https://${url}`;
+        }
+        return url;
+    };
 
     useEffect(() => {
         if (sliceData) {
-            setSocialMediaData(sliceData);
-            const updatedAccountsState = Object.keys(initialAccountsState).reduce((acc, key) => {
-                acc[key] = !!sliceData[key];
-                return acc;
+            // Ensure all URLs in sliceData have https:// prefix
+            const formattedSliceData = Object.entries(sliceData).reduce((acc, [key, value]) => {
+                return {
+                    ...acc,
+                    [key]: {
+                        ...value,
+                        pageURL: value.pageURL ? ensureHttps(value.pageURL) : 'https://',
+                    },
+                };
             }, {});
-            setSocialMediaAccount(updatedAccountsState);
-        }
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sliceData, mainPageToogle]);
+            setSocialMediaData(formattedSliceData);
+
+            setSocialMediaAccount((prevAccounts) => {
+                const updatedAccountsState = { ...prevAccounts };
+                Object.keys(formattedSliceData).forEach((key) => {
+                    if (key in updatedAccountsState) {
+                        updatedAccountsState[key] = true;
+                    }
+                });
+                return updatedAccountsState;
+            });
+        }
+    }, [sliceData]);
+
 
 
     return (
@@ -218,7 +239,7 @@ const SocialMediaInfo = () => {
                                             <label>Yes</label>
                                             <input
                                                 type='checkbox'
-                                                checked={socialMediaData[platform]?.mi_fbm === true} 
+                                                checked={socialMediaData[platform]?.mi_fbm === true}
                                                 onChange={(e) => handleFieldChange(platform, 'mi_fbm', e.target.checked)}
                                             />
                                         </span>
@@ -226,7 +247,7 @@ const SocialMediaInfo = () => {
                                             <label>No</label>
                                             <input
                                                 type='checkbox'
-                                                checked={socialMediaData[platform]?.mi_fbm === false} 
+                                                checked={socialMediaData[platform]?.mi_fbm === false}
                                                 onChange={(e) => handleFieldChange(platform, 'mi_fbm', !e.target.checked)}
                                             />
                                         </span>

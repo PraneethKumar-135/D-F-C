@@ -10,7 +10,7 @@ import { resetHotelInformation } from '../../Redux/Slice/HotelInfoSlice';
 import { resetSocialMediaAgencyInformation } from '../../Redux/Slice/SocialMediaAgencySlice';
 import { resetSocialMediaInformation } from '../../Redux/Slice/SocialMediaSlice';
 
-const AllData = ({ handleAlldataEdit }) => {
+const AllData = ({ handleAlldataEdit, handleLoading }) => {
     const dispatch = useDispatch();
     const [UrlToggle, setUrlToggle] = useState({});
     const [PageIDToggle, setPageIDToggle] = useState({});
@@ -37,11 +37,6 @@ const AllData = ({ handleAlldataEdit }) => {
 
     const handlEditFunction = (data) => {
         handleAlldataEdit(data);
-        if (data.currentPage === 3 || data.currentPage === 4) {
-            dispatch(editMainPage(true));
-        } else {
-            dispatch(editMainPage(false));
-        }
     }
 
 
@@ -87,11 +82,14 @@ const AllData = ({ handleAlldataEdit }) => {
                 setApiData({ "Status": response.status, "Response": response.data.message })
             })
             .catch((error) => {
-                // console.log(error);
                 console.log(JSON.stringify(error.response.status));
                 console.log(JSON.stringify(error.response.data));
                 setApiData({ "Status": error.response.status, "Response": error.response.data.detail })
             });
+    }
+
+    const handleAllDataLoading = (data) => {
+        handleLoading(data);
     }
 
 
@@ -105,6 +103,7 @@ const AllData = ({ handleAlldataEdit }) => {
             dispatch(resetPersonalInformation(true));
             dispatch(updatedCurrentPage(1))
             dispatch(editMainPage(true));
+            handleAllDataLoading(false);
         }
         setApiData({ Status: null, Response: '' });
     };

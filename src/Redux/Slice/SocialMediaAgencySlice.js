@@ -42,8 +42,18 @@ export const SocialMediaAgencySlice = createSlice({
 
                             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue)) {
                                 state.SocialMediaAgencyError[field] = true;
-                                state.SocialMediaAgencyErrorMessage[field] = "Email Should Contain '@' , '.'";
+                                state.SocialMediaAgencyErrorMessage[field] = "Email Should Contain '@' , '.com'";
                             } else {
+                                state.SocialMediaAgencyErrorMessage[field] = "";
+                            }
+                        }
+                        else if (field === 'PrimaryContactName') {
+                            const hasNumber = /[0-9]/.test(value);
+                            if (hasNumber) {
+                                state.SocialMediaAgencyError[field] = true;
+                                state.SocialMediaAgencyErrorMessage[field] = 'PrimaryContactName Should not contain Numbers.';
+                            } else {
+                                state.SocialMediaAgencyError[field] = false;
                                 state.SocialMediaAgencyErrorMessage[field] = "";
                             }
                         }

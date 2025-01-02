@@ -12,7 +12,6 @@ const socialMediaSlice = createSlice({
         updateSocialMediaAccounts: (state, action) => {
             const { platform, field, value } = action.payload;
 
-
             if (!state.SocialMediaInformation[platform]) {
                 state.SocialMediaInformation[platform] = {};
                 state.SocialMediaErrors[platform] = {};
@@ -33,7 +32,7 @@ const socialMediaSlice = createSlice({
                         state.SocialMediaErrorMessages[platform][field] = 'Email is required.';
                     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                         state.SocialMediaErrors[platform][field] = true;
-                        state.SocialMediaErrorMessages[platform][field] = 'Email format is invalid. Should Contain "@" ,"."';
+                        state.SocialMediaErrorMessages[platform][field] = 'Email format is invalid. Should Contain "@" ,".com"';
                     }
                     break;
 
